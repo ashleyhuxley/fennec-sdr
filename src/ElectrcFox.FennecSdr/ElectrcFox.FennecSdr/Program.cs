@@ -1,3 +1,110 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using System;
+using System.Device.Gpio;
+using System.Device.Spi;
+using System.Threading;
 
-Console.WriteLine("Hello, World!");
+class Ili9341
+{
+    const int DcPin = 25;
+    const int ResetPin = 24;
+
+    private SpiDevice spi;
+    private GpioController gpio;
+
+    public Ili9341()
+    {
+        gpio = new GpioController();
+        gpio.OpenPin(DcPin, PinMode.Output);
+        gpio.OpenPin(ResetPin, PinMode.Output);
+
+        var settings = new SpiConnectionSettings(0, 0)
+        {
+            ClockFrequency = 16_000_000,
+            Mode = SpiMode.Mode0
+        };
+
+        spi = SpiDevice.Create(settings);
+    }
+
+    void WriteCommand(byte cmd)
+    {
+        gpio.Write(DcPin, PinValue.Low);
+        spi.WriteByte(cmd);
+    }
+
+    void WriteData(ReadOnlySpan<byte> data)
+    {
+        gpio.Write(DcPin, PinValue.High);
+        spi.Write(data);
+    }
+
+    public void Reset()
+    {
+        gpio.Write(ResetPin, PinValue.Low);
+        Thread.Sleep(20);
+        gpio.Write(ResetPin, PinValue.High);
+        Thread.Sleep(150);
+    }
+
+    public void Init()
+    {
+        Reset();
+
+        WriteCommand(0x01); // Software reset
+        Thread.Sleep(150);
+
+        WriteCommand(0x28); // Display OFF
+
+        WriteCommand(0x3A); // Pixel format
+        WriteData(stackalloc byte[] { 0x55 }); // 16-bit
+
+        WriteCommand(0x36); // Memory access control
+        WriteData(stackalloc byte[] { 0x48 }); // RGB, top-left
+
+        WriteCommand(0x11); // Sleep OUT
+        Thread.Sleep(120);
+
+        WriteCommand(0x29); // Display ON
+    }
+
+    public void FillScreen(ushort color)
+    {
+        WriteCommand(0x2A); // Column addr
+        WriteData(stackalloc byte[] { 0x00, 0x00, 0x01, 0x3F }); // 0..319
+
+        WriteCommand(0x2B); // Page addr
+        WriteData(stackalloc byte[] { 0x00, 0x00, 0x00, 0xEF }); // 0..239
+
+        WriteCommand(0x2C); // Memory write
+
+        Span<byte> buffer = stackalloc byte[320 * 2];
+        for (int i = 0; i < buffer.Length; i += 2)
+        {
+            buffer[i] = (byte)(color >> 8);
+            buffer[i + 1] = (byte)(color & 0xFF);
+        }
+
+        gpio.Write(DcPin, PinValue.High);
+        for (int y = 0; y < 240; y++)
+            spi.Write(buffer);
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("ILI9341 test");
+
+        var lcd = new Ili9341();
+        lcd.Init();
+
+        lcd.FillScreen(0xF800); // RED
+        Thread.Sleep(1000);
+        lcd.FillScreen(0x07E0); // GREEN
+        Thread.Sleep(1000);
+        lcd.FillScreen(0x001F); // BLUE
+
+        Console.WriteLine("Done");
+    }
+}
