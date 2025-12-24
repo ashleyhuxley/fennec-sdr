@@ -58,8 +58,8 @@ class Ili9341
         WriteCommand(0x3A); // Pixel format
         WriteData(stackalloc byte[] { 0x55 }); // 16-bit
 
-        WriteCommand(0x36); // Memory access control
-        WriteData(stackalloc byte[] { 0x48 }); // RGB, top-left
+        WriteCommand(0x36); // Memory Access Control
+        WriteData(stackalloc byte[] { 0x28 }); // Landscape, RGB
 
         WriteCommand(0x11); // Sleep OUT
         Thread.Sleep(120);
@@ -69,24 +69,37 @@ class Ili9341
 
     public void FillScreen(ushort color)
     {
+        const int Width = 320;
+        const int Height = 240;
+
         WriteCommand(0x2A); // Column addr
-        WriteData(stackalloc byte[] { 0x00, 0x00, 0x01, 0x3F }); // 0..319
+        WriteData(stackalloc byte[]
+        {
+            0x00, 0x00,
+            (byte)((Width - 1) >> 8),
+            (byte)((Width - 1) & 0xFF)
+        });
 
         WriteCommand(0x2B); // Page addr
-        WriteData(stackalloc byte[] { 0x00, 0x00, 0x00, 0xEF }); // 0..239
+        WriteData(stackalloc byte[]
+        {
+            0x00, 0x00,
+            (byte)((Height - 1) >> 8),
+            (byte)((Height - 1) & 0xFF)
+        });
 
         WriteCommand(0x2C); // Memory write
 
-        Span<byte> buffer = stackalloc byte[320 * 2];
-        for (int i = 0; i < buffer.Length; i += 2)
+        Span<byte> line = stackalloc byte[Width * 2];
+        for (int i = 0; i < line.Length; i += 2)
         {
-            buffer[i] = (byte)(color >> 8);
-            buffer[i + 1] = (byte)(color & 0xFF);
+            line[i] = (byte)(color >> 8);
+            line[i + 1] = (byte)(color & 0xFF);
         }
 
         gpio.Write(DcPin, PinValue.High);
-        for (int y = 0; y < 240; y++)
-            spi.Write(buffer);
+        for (int y = 0; y < Height; y++)
+            spi.Write(line);
     }
 }
 
