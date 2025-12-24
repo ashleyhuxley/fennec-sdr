@@ -57,22 +57,48 @@
             return result;
         }
 
-        public static double? DetectCTCSS(short[] samples, double threshold = 1e6)
+        public static double? DetectCTCSS(
+            short[] samples,
+            double minEnergy = 1e9,
+            double dominanceRatio = 6.0,
+            double minConfidence = 0.01
+        )
         {
+            double totalEnergy = 0;
+            foreach (short s in samples)
+                totalEnergy += (double)s * s;
+
+            if (totalEnergy < minEnergy)
+                return null;
+
             double maxPower = 0;
+            double secondPower = 0;
             double? bestMatch = null;
 
             foreach (double freq in CtcssTones)
             {
                 double power = Goertzel(samples, freq, Constatnts.RtlSdrSampleRate);
+
                 if (power > maxPower)
                 {
+                    secondPower = maxPower;
                     maxPower = power;
                     bestMatch = freq;
                 }
+                else if (power > secondPower)
+                {
+                    secondPower = power;
+                }
             }
 
-            return maxPower > threshold ? bestMatch : null;
+            if (maxPower < secondPower * dominanceRatio)
+                return null;
+
+            double confidence = maxPower / totalEnergy;
+            if (confidence < minConfidence)
+                return null;
+
+            return bestMatch;
         }
 
         private static double Goertzel(short[] samples, double frequency, int sampleRate)
