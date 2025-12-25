@@ -43,7 +43,7 @@ public class Xpt2046 : IDisposable
         var settings = new SpiConnectionSettings(spiBusId, csPin)
         {
             Mode = SpiMode.Mode0,
-            ClockFrequency = 2_000_000,
+            ClockFrequency = 1_000_000,
         };
 
         _spi = SpiDevice.Create(settings);
@@ -59,7 +59,7 @@ public class Xpt2046 : IDisposable
         _gpio.OpenPin(_irqPinNumber, PinMode.InputPullUp);
         _gpio.RegisterCallbackForPinValueChangedEvent(
             _irqPinNumber,
-            PinEventTypes.Rising | PinEventTypes.Falling,
+            PinEventTypes.Falling,
             IrqPinValueChanged
         );
 
@@ -90,6 +90,7 @@ public class Xpt2046 : IDisposable
 
     private void IrqPinValueChanged(object sender, PinValueChangedEventArgs args)
     {
+        Console.WriteLine("IRQ fired");
         _touchEventQueue.Release();
     }
 
@@ -128,30 +129,18 @@ public class Xpt2046 : IDisposable
         rawY = y;
         pressure = z;
 
+        Console.WriteLine($"RAW X={x} Y={y} Z={z}");
+
         return true;
-    }
-
-    // Read raw 12-bit X/Y coordinate
-    private int ReadRaw(byte command)
-    {
-        Span<byte> write = stackalloc byte[3];
-        Span<byte> read = stackalloc byte[3];
-
-        write[0] = command;
-        write[1] = 0;
-        write[2] = 0;
-
-        _spi.TransferFullDuplex(write, read);
-
-        int value = (read[1] << 8 | read[2]) >> 3; // 12-bit
-        return value;
     }
 
     private void ProcessRawSample(int rawX, int rawY, int pressure)
     {
         var now = DateTime.UtcNow;
 
-        if (pressure <= 0)
+        const int MinPressure = 50;
+
+        if (pressure < MinPressure)
         {
             HandleRelease(now);
             return;
@@ -188,8 +177,23 @@ public class Xpt2046 : IDisposable
 
     private void BeginTouch(TouchPoint point)
     {
-        _stablePoint = point;
-        _stableCount = 1;
+        if (_stableCount == 0)
+        {
+            _stablePoint = point;
+        }
+
+        if (
+            Math.Abs(point.X - _stablePoint.X) < MoveThresholdPx
+            && Math.Abs(point.Y - _stablePoint.Y) < MoveThresholdPx
+        )
+        {
+            _stableCount++;
+        }
+        else
+        {
+            _stablePoint = point;
+            _stableCount = 1;
+        }
 
         if (_stableCount >= StableCountRequired)
         {
@@ -256,9 +260,7 @@ public class Xpt2046 : IDisposable
                 _cts.Cancel();
                 _workerTask?.Wait();
 
-                _gpio.UnregisterCallbackForPinValueChangedEvent(
-                    _irqPinNumber,
-                    IrqPinValueChanged);
+                _gpio.UnregisterCallbackForPinValueChangedEvent(_irqPinNumber, IrqPinValueChanged);
 
                 _gpio.ClosePin(_irqPinNumber);
                 _touchEventQueue.Dispose();
@@ -271,7 +273,6 @@ public class Xpt2046 : IDisposable
 
     public void Dispose()
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
