@@ -28,6 +28,9 @@ public class Program
             {
                 Console.WriteLine($"Touch at {pos.Value.x},{pos.Value.y}");
                 // Map to your buttons, e.g., frequency selection
+
+                gfx.FillEllipse(pos.Value.x - 5, pos.Value.y - 5, 10, 10, Color.Red);
+                gfx.Flush();
             }
 
             Thread.Sleep(10); // simple polling loop
