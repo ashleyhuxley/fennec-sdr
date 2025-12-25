@@ -7,7 +7,7 @@ public class Program
         Console.WriteLine("Fennec SDR Ready");
 
         var lcd = new Ili9341(0, 0);
-        var touch = new Xpt2046(spiBusId: 0, csPin: 1, irqPin: 25);
+        var touch = new Xpt2046(spiBusId: 0, csPin: 1, irqPin: 17);
         
         lcd.Init();
 
