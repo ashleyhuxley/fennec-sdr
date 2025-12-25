@@ -8,16 +8,16 @@ public class Ili9341
     const int DcPin = 25;
     const int ResetPin = 24;
 
-    private SpiDevice spi;
-    private GpioController gpio;
+    private readonly SpiDevice spi;
+    private readonly GpioController gpio;
 
-    public Ili9341()
+    public Ili9341(int spiBusId, int csPin)
     {
         gpio = new GpioController();
         gpio.OpenPin(DcPin, PinMode.Output);
         gpio.OpenPin(ResetPin, PinMode.Output);
 
-        var settings = new SpiConnectionSettings(0, 0)
+        var settings = new SpiConnectionSettings(spiBusId, csPin)
         {
             ClockFrequency = 16_000_000,
             Mode = SpiMode.Mode0
