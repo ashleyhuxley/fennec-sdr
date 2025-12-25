@@ -5,17 +5,19 @@ namespace ElectrcFox.FennecSdr;
 
 public class Ili9341
 {
-    const int DcPin = 25;
-    const int ResetPin = 24;
+    private const int DcPin = 25;
+    private const int ResetPin = 24;
 
-    private readonly SpiDevice spi;
-    private readonly GpioController gpio;
+    private readonly SpiDevice _spi;
+    private readonly GpioController _gpio;
 
-    public Ili9341(int spiBusId, int csPin)
+    private readonly object _spiLock;
+
+    public Ili9341(int spiBusId, int csPin, object spiLock)
     {
-        gpio = new GpioController();
-        gpio.OpenPin(DcPin, PinMode.Output);
-        gpio.OpenPin(ResetPin, PinMode.Output);
+        _gpio = new GpioController();
+        _gpio.OpenPin(DcPin, PinMode.Output);
+        _gpio.OpenPin(ResetPin, PinMode.Output);
 
         var settings = new SpiConnectionSettings(spiBusId, csPin)
         {
@@ -23,37 +25,60 @@ public class Ili9341
             Mode = SpiMode.Mode0
         };
 
-        spi = SpiDevice.Create(settings);
+        _spi = SpiDevice.Create(settings);
+        _spiLock = spiLock;
     }
     
     public void BeginWrite()
     {
         WriteCommand(0x2C);
-        gpio.Write(DcPin, PinValue.High);
+
+        lock (_spiLock)
+        {
+            _gpio.Write(DcPin, PinValue.High);
+        }
     }
 
     public void WriteScanline(ReadOnlySpan<byte> rgb565Line)
     {
-        spi.Write(rgb565Line);
+        lock (_spiLock)
+        {
+            _spi.Write(rgb565Line);
+        }
     }
 
     void WriteCommand(byte cmd)
     {
-        gpio.Write(DcPin, PinValue.Low);
-        spi.WriteByte(cmd);
+        lock (_spiLock)
+        {
+            _gpio.Write(DcPin, PinValue.Low);
+            _spi.WriteByte(cmd);
+        }
     }
 
     void WriteData(ReadOnlySpan<byte> data)
     {
-        gpio.Write(DcPin, PinValue.High);
-        spi.Write(data);
+        lock (_spiLock)
+        {
+            _gpio.Write(DcPin, PinValue.High);
+            _spi.Write(data);
+        }
     }
 
     public void Reset()
     {
-        gpio.Write(ResetPin, PinValue.Low);
+        lock (_spiLock)
+        {
+            _gpio.Write(ResetPin, PinValue.Low);
+        }
+
         Thread.Sleep(20);
-        gpio.Write(ResetPin, PinValue.High);
+
+        lock (_spiLock)
+        {
+            _gpio.Write(ResetPin, PinValue.High);
+        }
+
         Thread.Sleep(150);
     }
 
@@ -67,10 +92,10 @@ public class Ili9341
         WriteCommand(0x28); // Display OFF
 
         WriteCommand(0x3A); // Pixel format
-        WriteData(stackalloc byte[] { 0x55 }); // 16-bit
+        WriteData([0x55]); // 16-bit
 
         WriteCommand(0x36); // Memory Access Control
-        WriteData(stackalloc byte[] { 0x28 }); // Landscape, RGB
+        WriteData([0x28]); // Landscape, RGB
 
         WriteCommand(0x11); // Sleep OUT
         Thread.Sleep(120);
@@ -125,8 +150,8 @@ public class Ili9341
             line[i + 1] = (byte)(color & 0xFF);
         }
 
-        gpio.Write(DcPin, PinValue.High);
+        _gpio.Write(DcPin, PinValue.High);
         for (int y = 0; y < Height; y++)
-            spi.Write(line);
+            _spi.Write(line);
     }   
 }
