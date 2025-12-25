@@ -13,6 +13,8 @@ public class Xpt2046
     private const byte CMD_X = 0b10010000;
     private const byte CMD_Y = 0b11010000;
 
+    private int minX = 474, minY = 332, maxX = 3352, maxY = 3900;
+
     public Xpt2046(int spiBusId, int csPin, int irqPin, TouchCalibration touchCalibration)
     {
         _touchCalibration = touchCalibration;
@@ -61,6 +63,16 @@ public class Xpt2046
         int rawY = ReadRaw(CMD_Y);
 
         Console.WriteLine($"Raw Touch Values: {rawX}, {rawY}");
+
+        if (rawX < minX || rawX > maxX || rawY < minY || rawY > maxY)
+        {
+            // Update bounds
+            minX = Math.Min(minX, rawX);
+            minY = Math.Min(minY, rawY);
+            maxX = Math.Max(maxX, rawX);
+            maxY = Math.Max(maxY, rawY);
+            Console.WriteLine($"NEW BOUNDS: {minX}, {minY} to {maxX}, {maxY}");
+        }
 
         if (_touchCalibration.SwapXY)
         {
