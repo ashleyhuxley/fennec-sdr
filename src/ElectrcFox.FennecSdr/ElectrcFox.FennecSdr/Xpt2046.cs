@@ -55,6 +55,8 @@ public class Xpt2046
         int x = ReadRaw(CMD_X);
         int y = ReadRaw(CMD_Y);
 
+        Console.WriteLine($"Raw Touch Values: {x}, {y}");
+
         // Map raw 0–4095 to screen 0–319 / 0–239
         int px = x * 320 / 4096;
         int py = y * 240 / 4096;

@@ -1,4 +1,6 @@
-﻿namespace ElectrcFox.FennecSdr;
+﻿using SixLabors.ImageSharp;
+
+namespace ElectrcFox.FennecSdr;
 
 public class Program
 {
@@ -12,6 +14,9 @@ public class Program
         lcd.Init();
 
         var gfx = new GraphicsRenderer(lcd);
+        gfx.Clear(Color.Black);
+        gfx.DrawText("Fennec SDR", 20, 20, Color.White);
+        gfx.Flush();
 
         //var ctcssUi = new CtcssUi("");
         //ctcssUi.Run(gfx);
