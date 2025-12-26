@@ -6,7 +6,9 @@ namespace ElectricFox.FennecSdr.App.Ui;
 
 public abstract class UiElement
 {
-    public Rectangle Bounds { get; set; }
+    public Point Position { get; set; }
+    public abstract Size Size { get; }
+    public Rectangle Bounds => new(Position, Size);
     public bool Visible { get; set; } = true;
 
     public virtual void Render(GraphicsRenderer renderer) { }

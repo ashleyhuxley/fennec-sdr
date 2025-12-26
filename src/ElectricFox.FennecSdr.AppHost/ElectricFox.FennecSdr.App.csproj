@@ -7,6 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\CalBlk36.bdf" />
+    <None Remove="Resources\fennec-sdr.jpg" />
+    <None Remove="Resources\fennec.png" />
+    <None Remove="Resources\open_iconic_other_2x.bdf" />
+    <None Remove="Resources\profont17.bdf" />
+    <None Remove="Resources\Tamzen8x15b.bdf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CalBlk36.bdf" />
+    <EmbeddedResource Include="Resources\fennec-sdr.jpg" />
+    <EmbeddedResource Include="Resources\fennec.png" />
+    <EmbeddedResource Include="Resources\open_iconic_other_2x.bdf" />
+    <EmbeddedResource Include="Resources\profont17.bdf" />
+    <EmbeddedResource Include="Resources\Tamzen8x15b.bdf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ElectricFox.FennecSdr.Graphics\ElectricFox.FennecSdr.Graphics.csproj" />
     <ProjectReference Include="..\ElectricFox.FennecSdr.Touch\ElectricFox.FennecSdr.Touch.csproj" />
   </ItemGroup>

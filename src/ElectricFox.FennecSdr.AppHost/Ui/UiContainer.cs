@@ -1,13 +1,29 @@
 ﻿using ElectrcFox.FennecSdr;
 using ElectrcFox.FennecSdr.Touch;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 
 namespace ElectricFox.FennecSdr.App.Ui;
 
 public sealed class UiContainer : UiElement
 {
     public List<UiElement> Children { get; } = new();
+
+    public override Size Size
+    {
+        get
+        {
+            int width = 0;
+            int height = 0;
+
+            foreach (var child in Children)
+            {
+                width = Math.Max(width, child.Bounds.Right);
+                height = Math.Max(height, child.Bounds.Bottom);
+            }
+
+            return new Size(width, height);
+        }
+    }
 
     public override void Render(GraphicsRenderer renderer)
     {
