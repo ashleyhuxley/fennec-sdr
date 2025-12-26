@@ -45,10 +45,32 @@ public class GraphicsRenderer
         }
     }
 
-    public void DrawRect(int x, int y, int w, int h, Color color)
+    public void DrawGlyph(int i, BdfFont font, int x, int y, Color color)
+    {
+        var data = font.RenderBitmap([i], GlyphLookupOption.UseIndex);
+
+        for (int ax = 0; ax < data.GetLength(0); ax++)
+        {
+            for (int ay = 0; ay < data.GetLength(1); ay++)
+            {
+                if (data[ax, ay])
+                {
+                    _image[ax + x, ay + y] = color;
+                }
+            }
+        }
+    }
+
+    public void DrawImage(int x, int y, Image<Rgba32> image)
     {
         _image.Mutate(ctx =>
-            ctx.Draw(color, 1, new Rectangle(x, y, w, h)));
+            ctx.DrawImage(image, new Point(x, y), 1f));
+    }
+
+    public void DrawRect(int x, int y, int w, int h, Color color, int thickness = 1)
+    {
+        _image.Mutate(ctx =>
+            ctx.Draw(color, thickness, new Rectangle(x, y, w, h)));
     }
 
     public void FillRect(int x, int y, int w, int h, Color color)

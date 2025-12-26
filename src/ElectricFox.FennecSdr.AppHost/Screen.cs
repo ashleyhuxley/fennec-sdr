@@ -1,5 +1,6 @@
 ﻿using ElectrcFox.FennecSdr;
 using ElectrcFox.FennecSdr.Touch;
+using ElectricFox.FennecSdr.App.Ui;
 
 namespace ElectricFox.FennecSdr.App;
 
@@ -15,4 +16,6 @@ public abstract class Screen
     public virtual void Update(TimeSpan delta) { }
     public abstract void Render(GraphicsRenderer renderer);
     public virtual void OnTouch(TouchEvent e) { }
+
+    protected UiContainer Controls = new();
 }

@@ -10,6 +10,8 @@ public sealed class BitmapScanlineTarget : IScanlineTarget
 
     public Bitmap Bitmap { get; }
 
+    public event Action? FrameCompleted;
+
     public BitmapScanlineTarget(int width, int height)
     {
         Width = width;
@@ -61,5 +63,8 @@ public sealed class BitmapScanlineTarget : IScanlineTarget
         }
     }
 
-    public void EndFrame() { }
+    public void EndFrame() 
+    { 
+        FrameCompleted?.Invoke();
+    }
 }
