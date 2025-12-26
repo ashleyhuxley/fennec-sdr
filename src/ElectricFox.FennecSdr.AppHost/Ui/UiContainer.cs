@@ -1,4 +1,5 @@
-﻿using ElectrcFox.FennecSdr.Touch;
+﻿using ElectrcFox.FennecSdr;
+using ElectrcFox.FennecSdr.Touch;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -8,12 +9,12 @@ public sealed class UiContainer : UiElement
 {
     public List<UiElement> Children { get; } = new();
 
-    public override void Render(IImageProcessingContext ctx)
+    public override void Render(GraphicsRenderer renderer)
     {
         if (!Visible) return;
 
         foreach (var child in Children)
-            child.Render(ctx);
+            child.Render(renderer);
     }
 
     public override bool OnTouch(TouchEvent e)
