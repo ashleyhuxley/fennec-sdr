@@ -1,7 +1,7 @@
 ﻿using System.Device.Gpio;
 using System.Device.Spi;
 
-namespace ElectrcFox.FennecSdr;
+namespace ElectricFox.FennecSdr.Display;
 
 public class Ili9341
 {

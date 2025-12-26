@@ -14,4 +14,10 @@
       <PackageReference Include="System.Device.Gpio" Version="4.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ElectricFox.FennecSdr.Display\ElectricFox.FennecSdr.Display.csproj" />
+      <ProjectReference Include="..\ElectricFox.FennecSdr.Graphics\ElectricFox.FennecSdr.Graphics.csproj" />
+      <ProjectReference Include="..\ElectricFox.FennecSdr.Touch\ElectricFox.FennecSdr.Touch.csproj" />
+    </ItemGroup>
+
 </Project>

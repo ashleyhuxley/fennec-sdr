@@ -3,7 +3,7 @@ using System.Device.Spi;
 
 namespace ElectrcFox.FennecSdr.Touch;
 
-public class Xpt2046 : IDisposable
+public class Xpt2046 : IDisposable, ITouchController
 {
     public event Action<TouchEvent>? TouchEventReceived;
 

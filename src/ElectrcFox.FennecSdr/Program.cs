@@ -1,4 +1,5 @@
 ﻿using ElectrcFox.FennecSdr.Touch;
+using ElectricFox.FennecSdr.Display;
 using SixLabors.ImageSharp;
 
 namespace ElectrcFox.FennecSdr;
@@ -8,7 +9,6 @@ public class Program
     public static async Task Main(string[] args)
     {
         var touchCal = new TouchCalibration(369, 3538, 332, 3900, true, false, true);
-
         var spiLock = new object();
 
         var lcd = new Ili9341(0, 0, spiLock);
@@ -20,10 +20,9 @@ public class Program
         };
 
         touch.Start();
-
         lcd.Init();
 
-        var gfx = new GraphicsRenderer(lcd);
+        var gfx = new GraphicsRenderer(new LcdScanlineTarget(lcd, 320, 240));
         gfx.Clear(Color.Black);
         gfx.DrawText("Fennec SDR", 20, 20, Color.White);
         gfx.Flush();
