@@ -1,4 +1,4 @@
-﻿namespace ElectricFox.FennecSdr.App;
+﻿namespace ElectricFox.EmbeddedApplicationFramework;
 
 public sealed class ScreenManager
 {

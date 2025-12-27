@@ -1,30 +1,22 @@
-﻿using ElectrcFox.FennecSdr;
+﻿using ElectrcFox.EmbeddedApplicationFramework.Graphics;
 using ElectrcFox.FennecSdr.Touch;
 using SixLabors.ImageSharp;
 
-namespace ElectricFox.FennecSdr.App;
+namespace ElectricFox.EmbeddedApplicationFramework;
 
 public sealed class AppHost
 {
     private readonly GraphicsRenderer _renderer;
-    private readonly ITouchController _touch;
     private Screen? _current;
-    internal ResourceManager ResourceManager { get; } = new ResourceManager();
-    internal Size ScreenSize { get; private set; }
+    public Size ScreenSize { get; private set; }
 
     public AppHost(GraphicsRenderer renderer, ITouchController touch, Size screenSize)
     {
         _renderer = renderer;
-        _touch = touch;
         ScreenSize = screenSize;
 
-        _touch.TouchEventReceived += OnTouch;
+        touch.TouchEventReceived += OnTouch;
     }
-
-    public async Task Start()
-    {
-        await ResourceManager.LoadAsync();
-    }   
 
     public void SetScreen(Screen screen)
     {

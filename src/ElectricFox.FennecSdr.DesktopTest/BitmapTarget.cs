@@ -1,4 +1,4 @@
-﻿using ElectricFox.FennecSdr.Display;
+﻿using ElectricFox.EmbeddedApplicationFramework.Display;
 using System.Drawing.Imaging;
 
 namespace ElectricFox.FennecSdr.DesktopTest;

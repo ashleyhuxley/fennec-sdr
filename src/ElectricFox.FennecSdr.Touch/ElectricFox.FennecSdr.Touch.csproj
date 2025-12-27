@@ -8,4 +8,7 @@
 	<ItemGroup>
 		<PackageReference Include="System.Device.Gpio" Version="4.0.1" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\ElectricFox.EmbeddedApplicationFramework\ElectricFox.EmbeddedApplicationFramework.csproj" />
+	</ItemGroup>
 </Project>

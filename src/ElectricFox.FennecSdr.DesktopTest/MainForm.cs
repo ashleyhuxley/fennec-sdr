@@ -1,5 +1,6 @@
-using ElectrcFox.FennecSdr;
+using ElectrcFox.EmbeddedApplicationFramework.Graphics;
 using ElectrcFox.FennecSdr.Touch;
+using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.App.Screens;
 
@@ -33,25 +34,33 @@ namespace ElectricFox.FennecSdr.DesktopTest
 
         public void Start()
         {
-            
+
         }
 
         private async void MainFormLoad(object sender, EventArgs e)
         {
             this.pictureBox1.Image = this.bitmapTarget.Bitmap;
 
-            await app.Start();
-            screenManager.NavigateTo(new SplashScreen(screenManager));
+            var resources = new ResourceManager();
+            await resources.LoadAsync();
+
+            screenManager.NavigateTo(new SplashScreen(screenManager, resources));
         }
 
-        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        private void PictureBoxMouseDown(object sender, MouseEventArgs e)
         {
             TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Down, new TouchPoint(e.X, e.Y)));
         }
 
-        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        private void PictureBoxMouseMove(object sender, MouseEventArgs e)
         {
             this.Text = $"Mouse at {e.X}, {e.Y}";
+            TouchEventReceived?.Invoke(new TouchEvent (TouchEventType.Move, new TouchPoint(e.X, e.Y)));
+        }
+
+        private void PictureBoxMouseUp(object sender, MouseEventArgs e)
+        {
+            TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Up, new TouchPoint(e.X, e.Y)));
         }
     }
 }

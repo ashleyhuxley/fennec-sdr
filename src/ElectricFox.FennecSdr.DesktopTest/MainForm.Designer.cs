@@ -39,8 +39,9 @@
             pictureBox1.Size = new Size(320, 240);
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
-            pictureBox1.MouseDown += pictureBox1_MouseDown;
-            pictureBox1.MouseMove += pictureBox1_MouseMove;
+            pictureBox1.MouseDown += PictureBoxMouseDown;
+            pictureBox1.MouseMove += PictureBoxMouseMove;
+            pictureBox1.MouseUp += PictureBoxMouseUp;
             // 
             // MainForm
             // 

@@ -1,4 +1,6 @@
-﻿namespace ElectricFox.FennecSdr.Display
+﻿using ElectricFox.EmbeddedApplicationFramework.Display;
+
+namespace ElectricFox.FennecSdr.Display
 {
     public sealed class LcdScanlineTarget : IScanlineTarget
     {

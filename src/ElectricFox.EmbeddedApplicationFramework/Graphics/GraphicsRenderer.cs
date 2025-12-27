@@ -1,5 +1,5 @@
 ﻿using ElectricFox.BdfSharp;
-using ElectricFox.FennecSdr.Display;
+using ElectricFox.EmbeddedApplicationFramework.Display;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Drawing;
@@ -7,7 +7,7 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace ElectrcFox.FennecSdr;
+namespace ElectrcFox.EmbeddedApplicationFramework.Graphics;
 
 public class GraphicsRenderer
 {

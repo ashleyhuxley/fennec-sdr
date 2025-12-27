@@ -1,10 +1,10 @@
-﻿using ElectrcFox.FennecSdr;
+﻿using ElectrcFox.EmbeddedApplicationFramework.Graphics;
 using ElectrcFox.FennecSdr.Touch;
 using SixLabors.ImageSharp;
 
-namespace ElectricFox.FennecSdr.App.Ui;
+namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
-public sealed class UiContainer : UiElement
+public class UiContainer : UiElement
 {
     public List<UiElement> Children { get; } = new();
 

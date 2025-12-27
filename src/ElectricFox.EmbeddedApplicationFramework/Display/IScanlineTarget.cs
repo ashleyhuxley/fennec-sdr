@@ -1,4 +1,4 @@
-﻿namespace ElectricFox.FennecSdr.Display;
+﻿namespace ElectricFox.EmbeddedApplicationFramework.Display;
 
 public interface IScanlineTarget
 {

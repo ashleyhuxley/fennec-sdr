@@ -1,11 +1,12 @@
-﻿using ElectrcFox.FennecSdr;
+﻿using ElectrcFox.EmbeddedApplicationFramework.Graphics;
 using ElectrcFox.FennecSdr.Touch;
 using SixLabors.ImageSharp;
 
-namespace ElectricFox.FennecSdr.App.Ui;
+namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public abstract class UiElement
 {
+    public object? Tag { get; set; }
     public Point Position { get; set; }
     public abstract Size Size { get; }
     public Rectangle Bounds => new(Position, Size);
