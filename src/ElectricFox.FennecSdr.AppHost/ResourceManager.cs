@@ -46,7 +46,7 @@ namespace ElectricFox.FennecSdr.App
 
         public ResourceManager() { }
 
-        public async Task LoadAsync()
+        public async Task LoadAsync(CancellationToken token)
         {
             var assembly = typeof(ResourceManager).Assembly;
 
@@ -71,7 +71,8 @@ namespace ElectricFox.FennecSdr.App
             );
 
             Fennec = await Image.LoadAsync<Rgba32>(
-                assembly.GetManifestResourceStream("ElectricFox.FennecSdr.App.Resources.fennec.png")!
+                assembly.GetManifestResourceStream("ElectricFox.FennecSdr.App.Resources.fennec.png")!,
+                token
             );
         }
     }

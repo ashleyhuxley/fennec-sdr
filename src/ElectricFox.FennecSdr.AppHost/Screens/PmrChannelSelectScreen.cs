@@ -1,5 +1,4 @@
-﻿using ElectrcFox.FennecSdr.App;
-using ElectricFox.EmbeddedApplicationFramework;
+﻿using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.EmbeddedApplicationFramework.Ui;
 using SixLabors.ImageSharp;
 
@@ -7,13 +6,12 @@ namespace ElectricFox.FennecSdr.App.Screens
 {
     public class PmrChannelSelectScreen : Screen
     {
-        private readonly ScreenManager _screenManager;
-
         private readonly ResourceManager _resourceManager;
 
-        public PmrChannelSelectScreen(ScreenManager manager, ResourceManager resourceManager)
+        public int? SelectedChannel { get; private set; }
+
+        public PmrChannelSelectScreen(ResourceManager resourceManager)
         {
-            _screenManager = manager;
             _resourceManager = resourceManager;
         }
 
@@ -74,14 +72,7 @@ namespace ElectricFox.FennecSdr.App.Screens
         private void Button_Clicked(Button obj)
         {
             var channel = obj.Tag as int?;
-            if (channel is null)
-            {
-                throw new InvalidOperationException("No channel assigned to this button");
-            }
-
-            var frequency = Constants.PmrChannelFrequencies[channel.Value];
-
-            _screenManager.NavigateTo(new CtcssScreen(frequency, _resourceManager));
+            SelectedChannel = channel;
         }
     }
 }
