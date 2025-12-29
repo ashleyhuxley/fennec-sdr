@@ -47,6 +47,9 @@ namespace ElectricFox.FennecSdr.DesktopTest
 
             screenManager.NavigateTo(new SplashScreen(resources));
             await Task.Delay(2000);
+
+            var menuSelection = await screenManager.ShowAsync(new MainMenuScreen(resources));
+
             var channel = await screenManager.ShowAsync(new PmrChannelSelectScreen(resources));
             var freq = Constants.PmrChannelFrequencies[channel.Value];
 
