@@ -1,8 +1,9 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Display;
+using SixLabors.ImageSharp;
 
 namespace ElectricFox.FennecSdr.Display
 {
-    public sealed class LcdScanlineTarget : IScanlineTarget
+    public sealed class LcdScanlineTarget : IScanlineTarget, IPartialUpdateTarget
     {
         private readonly Ili9341 _lcd;
 
@@ -30,6 +31,22 @@ namespace ElectricFox.FennecSdr.Display
         public void EndFrame()
         {
             // Method intentionally left empty. LCD does not need EndFrame.
+        }
+
+        public void BeginRegion(Rectangle region)
+        {
+            _lcd.SetAddressWindow(
+                region.X,
+                region.Y,
+                region.Width,
+                region.Height);
+
+            _lcd.BeginWrite();
+        }
+
+        public void EndRegion()
+        {
+            // Not required for this display.
         }
     }
 
