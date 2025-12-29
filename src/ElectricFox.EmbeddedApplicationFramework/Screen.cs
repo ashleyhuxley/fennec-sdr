@@ -13,3 +13,20 @@ public abstract class Screen : UiContainer
 
     public virtual void Update(TimeSpan delta) { }
 }
+
+public abstract class Screen<TResult> : Screen
+{
+    private readonly TaskCompletionSource<TResult> _tcs = new();
+
+    public Task<TResult> Result => _tcs.Task;
+
+    protected void Complete(TResult result)
+    {
+        _tcs.TrySetResult(result);
+    }
+
+    protected void Cancel()
+    {
+        _tcs.TrySetCanceled();
+    }
+}

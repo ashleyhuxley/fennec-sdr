@@ -1,4 +1,5 @@
 using ElectrcFox.EmbeddedApplicationFramework.Graphics;
+using ElectrcFox.FennecSdr.App;
 using ElectrcFox.FennecSdr.Touch;
 using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.FennecSdr.App;
@@ -44,7 +45,12 @@ namespace ElectricFox.FennecSdr.DesktopTest
             var resources = new ResourceManager();
             await resources.LoadAsync();
 
-            screenManager.NavigateTo(new SplashScreen(screenManager, resources));
+            screenManager.NavigateTo(new SplashScreen(resources));
+            await Task.Delay(2000);
+            var channel = await screenManager.ShowAsync(new PmrChannelSelectScreen(resources));
+            var freq = Constants.PmrChannelFrequencies[channel.Value];
+
+            screenManager.NavigateTo(new CtcssScreen(freq, resources));
         }
 
         private void PictureBoxMouseDown(object sender, MouseEventArgs e)

@@ -9,16 +9,11 @@ public class SplashScreen : Screen
 {
     private static readonly Random _rng = new();
 
-    private readonly ScreenManager _screenManager;
-
     private readonly ResourceManager _resourceManager;
 
-    public SplashScreen(ScreenManager manager, ResourceManager resourceManager)
+    public SplashScreen(ResourceManager resourceManager)
     {
-        _screenManager = manager;
         _resourceManager = resourceManager;
-
-        var _ = new Timer(Callback, null, TimeSpan.FromSeconds(2), Timeout.InfiniteTimeSpan);
     }
 
     public override void OnEnter()
@@ -53,11 +48,6 @@ public class SplashScreen : Screen
         );
 
         Children.Add(new Label("SDR", _resourceManager.CalBlk36, 25, 175, Color.White));
-    }
-
-    private void Callback(object? state)
-    {
-        _screenManager.NavigateTo(new PmrChannelSelectScreen(_screenManager, _resourceManager));
     }
 
     private void Canvas_Rendered(GraphicsRenderer renderer)
