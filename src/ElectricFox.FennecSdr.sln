@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectrcFox.FennecSdr", "ElectrcFox.FennecSdr\ElectrcFox.FennecSdr.csproj", "{C6B8EC97-DAAF-44D0-A127-2378BF55F410}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr", "ElectricFox.FennecSdr\ElectricFox.FennecSdr.csproj", "{C6B8EC97-DAAF-44D0-A127-2378BF55F410}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr.Touch", "ElectricFox.FennecSdr.Touch\ElectricFox.FennecSdr.Touch.csproj", "{90FA10B2-0EB4-4C26-9FEB-BB4505D25FC6}"
 EndProject

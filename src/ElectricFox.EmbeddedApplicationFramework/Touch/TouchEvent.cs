@@ -1,4 +1,4 @@
-﻿namespace ElectrcFox.FennecSdr.Touch;
+﻿namespace ElectricFox.FennecSdr.Touch;
 
 public enum TouchEventType
 {

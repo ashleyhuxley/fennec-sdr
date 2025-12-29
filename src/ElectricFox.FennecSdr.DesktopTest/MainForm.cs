@@ -1,6 +1,6 @@
-using ElectrcFox.EmbeddedApplicationFramework.Graphics;
-using ElectrcFox.FennecSdr.App;
-using ElectrcFox.FennecSdr.Touch;
+using ElectricFox.EmbeddedApplicationFramework.Graphics;
+using ElectricFox.FennecSdr.App;
+using ElectricFox.FennecSdr.Touch;
 using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.App.Screens;

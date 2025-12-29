@@ -1,4 +1,4 @@
-﻿using ElectrcFox.EmbeddedApplicationFramework.Graphics;
+﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.EmbeddedApplicationFramework.Ui;
 using SixLabors.ImageSharp;

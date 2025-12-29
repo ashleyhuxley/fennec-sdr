@@ -7,7 +7,7 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace ElectrcFox.EmbeddedApplicationFramework.Graphics;
+namespace ElectricFox.EmbeddedApplicationFramework.Graphics;
 
 public class GraphicsRenderer
 {

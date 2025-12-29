@@ -1,4 +1,4 @@
-﻿using ElectrcFox.EmbeddedApplicationFramework.Graphics;
+﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.BdfSharp;
 using SixLabors.ImageSharp;
 

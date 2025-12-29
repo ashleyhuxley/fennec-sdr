@@ -1,7 +1,7 @@
 ﻿using SixLabors.ImageSharp;
 using System.Diagnostics;
 
-namespace ElectrcFox.FennecSdr
+namespace ElectricFox.FennecSdr
 {
     public class CtcssUi
     {

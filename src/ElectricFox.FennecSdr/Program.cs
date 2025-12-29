@@ -1,12 +1,12 @@
-﻿using ElectrcFox.FennecSdr.Touch;
+﻿using ElectricFox.FennecSdr.Touch;
 using ElectricFox.FennecSdr.Display;
 using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.App.Screens;
 using ElectricFox.EmbeddedApplicationFramework;
-using ElectrcFox.EmbeddedApplicationFramework.Graphics;
-using ElectrcFox.FennecSdr.App;
+using ElectricFox.EmbeddedApplicationFramework.Graphics;
+using ElectricFox.FennecSdr.App;
 
-namespace ElectrcFox.FennecSdr;
+namespace ElectricFox.FennecSdr;
 
 public class Program
 {

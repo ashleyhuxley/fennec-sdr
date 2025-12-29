@@ -1,4 +1,4 @@
-﻿namespace ElectrcFox.FennecSdr.App;
+﻿namespace ElectricFox.FennecSdr.App;
 
 public static class Constants
 {

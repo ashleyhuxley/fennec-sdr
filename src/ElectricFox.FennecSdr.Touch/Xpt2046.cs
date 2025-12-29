@@ -1,7 +1,7 @@
 ﻿using System.Device.Gpio;
 using System.Device.Spi;
 
-namespace ElectrcFox.FennecSdr.Touch;
+namespace ElectricFox.FennecSdr.Touch;
 
 public class Xpt2046 : IDisposable, ITouchController
 {
