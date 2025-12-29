@@ -1,6 +1,10 @@
 ﻿using ElectrcFox.FennecSdr.Touch;
 using ElectricFox.FennecSdr.Display;
-using SixLabors.ImageSharp;
+using ElectricFox.FennecSdr.App;
+using ElectricFox.FennecSdr.App.Screens;
+using ElectricFox.EmbeddedApplicationFramework;
+using ElectrcFox.EmbeddedApplicationFramework.Graphics;
+using ElectrcFox.FennecSdr.App;
 
 namespace ElectrcFox.FennecSdr;
 
@@ -22,16 +26,25 @@ public class Program
         touch.Start();
         lcd.Init();
 
-        var gfx = new GraphicsRenderer(new LcdScanlineTarget(lcd, 320, 240));
-        gfx.Clear(Color.Black);
-        gfx.DrawText("Fennec SDR", 20, 20, Color.White);
-        gfx.Flush();
+        var resources = new ResourceManager();
+        await resources.LoadAsync();
 
-        Console.WriteLine("Fennec SDR Ready");
+        var screenManager = new ScreenManager(new AppHost(
+            new GraphicsRenderer(new LcdScanlineTarget(lcd, 320, 240)),
+            touch,
+            new SixLabors.ImageSharp.Size(320, 240)
+        ));
 
-        while (true)
-        {
-            await Task.Delay(10);
-        }
+        screenManager.NavigateTo(new SplashScreen(resources));
+        await Task.Delay(2000);
+
+        var menuSelection = await screenManager.ShowAsync(new MainMenuScreen(resources));
+
+        var channel = await screenManager.ShowAsync(new PmrChannelSelectScreen(resources));
+        var freq = Constants.PmrChannelFrequencies[channel.Value];
+
+        screenManager.NavigateTo(new CtcssScreen(freq, resources));
+
+
     }
 }
