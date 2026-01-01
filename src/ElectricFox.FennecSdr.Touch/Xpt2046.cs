@@ -23,7 +23,8 @@ public class Xpt2046 : IDisposable, ITouchController
     private TouchPoint _stablePoint;
     private int _stableCount = 0;
     private DateTime _lastTouchTime;
-    private bool disposedValue;
+    private bool _disposedValue;
+    private bool _spiActive;
 
     // Thresholds for debounce and movement
     private const int MoveThresholdPx = 4;
@@ -90,6 +91,11 @@ public class Xpt2046 : IDisposable, ITouchController
 
     private void IrqPinValueChanged(object sender, PinValueChangedEventArgs args)
     {
+        if (_spiActive)
+        {
+            return;
+        }
+
         Console.WriteLine("IRQ fired");
         _touchEventQueue.Release();
     }
@@ -98,40 +104,49 @@ public class Xpt2046 : IDisposable, ITouchController
     {
         rawX = rawY = pressure = 0;
 
-        int Read12Bit(byte command)
+        _spiActive = true;
+
+        try
         {
-            Span<byte> tx = stackalloc byte[3];
-            Span<byte> rx = stackalloc byte[3];
+            int Read12Bit(byte command)
+            {
+                Span<byte> tx = stackalloc byte[3];
+                Span<byte> rx = stackalloc byte[3];
 
-            tx[0] = command;
-            tx[1] = 0x00;
-            tx[2] = 0x00;
+                tx[0] = command;
+                tx[1] = 0x00;
+                tx[2] = 0x00;
 
-            _spi.TransferFullDuplex(tx, rx);
+                _spi.TransferFullDuplex(tx, rx);
 
-            return ((rx[1] << 8) | rx[2]) >> 3;
+                return ((rx[1] << 8) | rx[2]) >> 3;
+            }
+
+            // Order matters: Y first, then X
+            int y = Read12Bit(0x90);
+            int x = Read12Bit(0xD0);
+
+            // Optional pressure
+            int z1 = Read12Bit(0xB0);
+            int z2 = Read12Bit(0xC0);
+            int z = z1 + 4095 - z2;
+
+            // Basic validity checks
+            if (x <= 0 || y <= 0 || x >= 4095 || y >= 4095)
+                return false;
+
+            rawX = x;
+            rawY = y;
+            pressure = z;
+
+            Console.WriteLine($"RAW X={x} Y={y} Z={z}");
+
+            return true;
         }
-
-        // Order matters: Y first, then X
-        int y = Read12Bit(0x90);
-        int x = Read12Bit(0xD0);
-
-        // Optional pressure
-        int z1 = Read12Bit(0xB0);
-        int z2 = Read12Bit(0xC0);
-        int z = z1 + 4095 - z2;
-
-        // Basic validity checks
-        if (x <= 0 || y <= 0 || x >= 4095 || y >= 4095)
-            return false;
-
-        rawX = x;
-        rawY = y;
-        pressure = z;
-
-        Console.WriteLine($"RAW X={x} Y={y} Z={z}");
-
-        return true;
+        finally
+        {
+            _spiActive = false;
+        }
     }
 
     private void ProcessRawSample(int rawX, int rawY, int pressure)
@@ -148,6 +163,8 @@ public class Xpt2046 : IDisposable, ITouchController
 
         var point = Calibrate(rawX, rawY);
         _lastTouchTime = now;
+
+        Console.WriteLine($"Calibrated to X={point.X} Y={point.Y}");
 
         if (!_isTouching)
         {
@@ -253,7 +270,7 @@ public class Xpt2046 : IDisposable, ITouchController
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
@@ -267,7 +284,7 @@ public class Xpt2046 : IDisposable, ITouchController
                 _cts.Dispose();
             }
 
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 

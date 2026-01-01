@@ -25,8 +25,8 @@ namespace ElectricFox.FennecSdr.App.Screens
             {
                 Tag = MainMenuItem.CtcssToneFinder,
                 Position = new Point(10, 10),
-                Width = 90,
-                Height = 20
+                Width = 120,
+                Height = 60
             };
 
             ctcssButton.Clicked += CtcssButton_Clicked;
