@@ -20,7 +20,7 @@ public abstract class Screen : UiContainer
     public override void OnRender(GraphicsRenderer renderer)
     {
         renderer.Clear(BackgroundColor);
-        base.Render(renderer);
+        base.OnRender(renderer);
     }
 }
 
