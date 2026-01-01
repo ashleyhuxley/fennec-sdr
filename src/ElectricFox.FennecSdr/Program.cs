@@ -4,7 +4,6 @@ using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.App.Screens;
 using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using ElectricFox.FennecSdr.App;
 
 namespace ElectricFox.FennecSdr;
 
