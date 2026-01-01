@@ -29,6 +29,7 @@ public class UiContainer : UiElement
     {
         if (!Visible) return;
 
+        this.Render(renderer);
         foreach (var child in Children)
             child.Render(renderer);
     }
