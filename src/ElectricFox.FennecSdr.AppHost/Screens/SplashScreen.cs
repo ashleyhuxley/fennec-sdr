@@ -18,36 +18,7 @@ public class SplashScreen : Screen
 
     public override void OnEnter()
     {
-        var canvas = new Canvas(this.App.ScreenSize.Width, this.App.ScreenSize.Height);
-        canvas.Rendered += Canvas_Rendered;
 
-        Children.Add(canvas);
-
-        Children.Add(new Picture(_resourceManager.Fennec) { Position = new Point(158, 15) });
-
-        Children.Add(
-            new Label(
-                "145.400",
-                _resourceManager.Profont17,
-                33,
-                42,
-                Color.FromRgb(56, 232, 46)
-            )
-        );
-
-        Children.Add(new Label("MHz", _resourceManager.Profont17, 105, 42, Color.White));
-
-        Children.Add(
-            new Label(
-                "FENNEC",
-                _resourceManager.CalBlk36,
-                25,
-                143,
-                Color.FromRgb(252, 111, 0)
-            )
-        );
-
-        Children.Add(new Label("SDR", _resourceManager.CalBlk36, 25, 175, Color.White));
     }
 
     private void Canvas_Rendered(GraphicsRenderer renderer)
@@ -102,27 +73,49 @@ public class SplashScreen : Screen
             u = 2.0f * (float)_rng.NextDouble() - 1.0f;
             v = 2.0f * (float)_rng.NextDouble() - 1.0f;
             S = u * u + v * v;
-        } while (S >= 1.0f || S == 0f);
+        } while (S >= 1.0f || (S - 0f < 0.0001f));
 
-        // Standard Normal Distribution
         float std = (float)(u * Math.Sqrt(-2.0f * Math.Log(S) / S));
 
-        // 1. Calculate Mean and Sigma
         float mean = (minValue + maxValue) / 2.0f;
         float sigma = (maxValue - mean) / 3.0f;
 
-        // 2. Apply Sharpness
-        // We normalize the 'std', apply a power to push values toward 0,
-        // then re-scale by sigma and move to mean.
-        // High sharpness (e.g., 3.0) creates a needle-like peak.
-        float sign = Math.Sign(std);
-        float sharpened = sign * (float)Math.Pow(Math.Abs(std), 1.0f / sharpness);
-
-        // Note: To get a SHARP peak (more values at center),
-        // we actually want to shrink the 'std' result before scaling.
-        // Alternatively, just reduce sigma significantly:
         float tightSigma = sigma / sharpness;
 
         return Math.Clamp(std * tightSigma + mean, minValue, maxValue);
+    }
+
+    public override void Initialize()
+    {
+        var canvas = new Canvas(320, 240);
+        canvas.Rendered += Canvas_Rendered;
+
+        Children.Add(canvas);
+
+        Children.Add(new Picture(_resourceManager.Fennec) { Position = new Point(158, 15) });
+
+        Children.Add(
+            new Label(
+                "145.400",
+                _resourceManager.Profont17,
+                33,
+                42,
+                Color.FromRgb(56, 232, 46)
+            )
+        );
+
+        Children.Add(new Label("MHz", _resourceManager.Profont17, 105, 42, Color.White));
+
+        Children.Add(
+            new Label(
+                "FENNEC",
+                _resourceManager.CalBlk36,
+                25,
+                143,
+                Color.FromRgb(252, 111, 0)
+            )
+        );
+
+        Children.Add(new Label("SDR", _resourceManager.CalBlk36, 25, 175, Color.White));
     }
 }

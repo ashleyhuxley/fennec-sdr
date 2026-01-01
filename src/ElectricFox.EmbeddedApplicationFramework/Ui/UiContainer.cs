@@ -6,7 +6,16 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public class UiContainer : UiElement
 {
-    public List<UiElement> Children { get; } = new();
+    private Rectangle? _dirty;
+
+    private List<UiElement> Children { get; } = new();
+
+    protected void AddChild(UiElement child)
+    {
+        child.Invalidated += OnInvalidated;
+        Children.Add(child);
+        OnInvalidated(child.Bounds);
+    }
 
     public override Size Size
     {
@@ -27,7 +36,15 @@ public class UiContainer : UiElement
 
     public override void Render(GraphicsRenderer renderer)
     {
-        if (!Visible) return;
+        if (!Visible)
+            return;
+
+        if (_dirty == null)
+            return;
+
+        renderer.PushClip(_dirty.Value);
+
+
 
         OnRender(renderer);
 
@@ -45,6 +62,14 @@ public class UiContainer : UiElement
                 Children[i].OnTouch(e))
                 return true;
         }
+
         return false;
+    }
+
+    private void OnInvalidated(Rectangle rect)
+    {
+        _dirty = _dirty == null
+            ? rect
+            : Rectangle.Union(_dirty.Value, rect);
     }
 }

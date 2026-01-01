@@ -8,18 +8,36 @@ namespace ElectricFox.FennecSdr.App.Screens
     {
         private readonly ResourceManager _resourceManager;
 
-        private readonly double _frequency;
+        private double _frequency;
 
-        public CtcssScreen(double frequency, ResourceManager resourceManager)
+        private Label frequencyLabel;
+
+        public double Frequency
         {
-            _frequency = frequency;
+            get => _frequency;
+            set
+            {
+                _frequency = value;
+                frequencyLabel.Text = $"{_frequency:0.00} MHz";
+            }
+        }
+
+        public CtcssScreen(ResourceManager resourceManager)
+        {
             _resourceManager = resourceManager;
         }
 
-        public override void OnEnter()
+        public override void Initialize()
         {
-            Children.Add(new Label("CTCSS Tone Finder", _resourceManager.Profont17, 10, 10, Color.White));
-            Children.Add(new Label($"{_frequency:0.###} MHz", _resourceManager.Tamzen8x15b, 10, 30, Color.Red));
+            frequencyLabel = new Label($"0.00 MHz", _resourceManager.Tamzen8x15b, 10, 30, Color.Red);
+
+            Children.Add(
+                new Label("CTCSS Tone Finder", _resourceManager.Profont17, 10, 10, Color.White)
+            );
+
+            Children.Add(frequencyLabel);
         }
+
+        public override void OnEnter() { }
     }
 }

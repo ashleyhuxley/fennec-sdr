@@ -22,6 +22,8 @@ public abstract class Screen : UiContainer
         renderer.Clear(BackgroundColor);
         base.OnRender(renderer);
     }
+
+    public abstract void Initialize();
 }
 
 public abstract class Screen<TResult> : Screen

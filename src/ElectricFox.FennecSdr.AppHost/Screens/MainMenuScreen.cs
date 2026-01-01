@@ -19,7 +19,7 @@ namespace ElectricFox.FennecSdr.App.Screens
             _resourceManager = resourceManager;
         }
 
-        public override void OnEnter()
+        public override void Initialize()
         {
             var ctcssButton = new Button("CTCSS", _resourceManager.Tamzen8x15b)
             {
@@ -33,6 +33,8 @@ namespace ElectricFox.FennecSdr.App.Screens
 
             Children.Add(ctcssButton);
         }
+
+        public override void OnEnter() { }
 
         private void CtcssButton_Clicked(Button obj)
         {

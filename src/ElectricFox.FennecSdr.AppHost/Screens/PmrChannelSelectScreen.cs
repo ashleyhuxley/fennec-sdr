@@ -13,7 +13,7 @@ namespace ElectricFox.FennecSdr.App.Screens
             _resourceManager = resourceManager;
         }
 
-        public override void OnEnter()
+        public override void Initialize()
         {
             var label = new Label(
                 "Select PMR channel",
@@ -66,6 +66,8 @@ namespace ElectricFox.FennecSdr.App.Screens
                 }
             }
         }
+
+        public override void OnEnter() { }
 
         private void Button_Clicked(Button obj)
         {
