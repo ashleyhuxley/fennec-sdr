@@ -24,6 +24,8 @@ public class GraphicsRenderer
     public void Clear(Color color)
     {
         _image.Mutate(ctx => ctx.Clear(color));
+
+        MarkDirty(new Rectangle(0, 0, _target.Width, _target.Height));
     }
 
     public void DrawText(string text, BdfFont font, int x, int y, Color color)

@@ -4,6 +4,7 @@ using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.App.Screens;
 using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.EmbeddedApplicationFramework.Graphics;
+using SixLabors.ImageSharp;
 
 namespace ElectricFox.FennecSdr;
 
@@ -31,7 +32,7 @@ public class Program
         var screenManager = new ScreenManager(new AppHost(
             new GraphicsRenderer(new LcdScanlineTarget(lcd, 320, 240)),
             touch,
-            new SixLabors.ImageSharp.Size(320, 240)
+            new Size(320, 240)
         ));
 
         screenManager.NavigateTo(new SplashScreen(resources));
