@@ -1,4 +1,5 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Ui;
+using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework;
 
@@ -12,6 +13,8 @@ public abstract class Screen : UiContainer
     public virtual void OnExit() { }
 
     public virtual void Update(TimeSpan delta) { }
+
+    public abstract void Initialize();
 }
 
 public abstract class Screen<TResult> : Screen
