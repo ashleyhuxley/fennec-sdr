@@ -17,7 +17,7 @@ public abstract class Screen : UiContainer
 
     public virtual void Update(TimeSpan delta) { }
 
-    public override void Render(GraphicsRenderer renderer)
+    public override void OnRender(GraphicsRenderer renderer)
     {
         renderer.Clear(BackgroundColor);
         base.Render(renderer);

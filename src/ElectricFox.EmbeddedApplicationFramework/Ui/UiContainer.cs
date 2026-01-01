@@ -29,10 +29,13 @@ public class UiContainer : UiElement
     {
         if (!Visible) return;
 
-        this.Render(renderer);
+        OnRender(renderer);
+
         foreach (var child in Children)
             child.Render(renderer);
     }
+
+    public virtual void OnRender(GraphicsRenderer renderer) { }
 
     public override bool OnTouch(TouchEvent e)
     {
