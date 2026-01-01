@@ -1,7 +1,7 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using ElectricFox.FennecSdr.Touch;
 using ElectricFox.BdfSharp;
 using SixLabors.ImageSharp;
+using ElectricFox.EmbeddedApplicationFramework.Touch;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
@@ -40,12 +40,7 @@ public sealed class Button : UiElement
 
     public override bool OnTouch(TouchEvent e)
     {
-        if (e.Type == TouchEventType.Up)
-        {
-            Clicked?.Invoke(this);
-            return true;
-        }
-
-        return false;
+        Clicked?.Invoke(this);
+        return true;
     }
 }

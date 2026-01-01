@@ -4,6 +4,7 @@ using ElectricFox.FennecSdr.Touch;
 using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.App.Screens;
+using ElectricFox.EmbeddedApplicationFramework.Touch;
 
 namespace ElectricFox.FennecSdr.DesktopTest
 {
@@ -58,18 +59,18 @@ namespace ElectricFox.FennecSdr.DesktopTest
 
         private void PictureBoxMouseDown(object sender, MouseEventArgs e)
         {
-            TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Down, new TouchPoint(e.X, e.Y)));
+            TouchEventReceived?.Invoke(new TouchEvent(new TouchPoint(e.X, e.Y)));
         }
 
         private void PictureBoxMouseMove(object sender, MouseEventArgs e)
         {
             this.Text = $"Mouse at {e.X}, {e.Y}";
-            TouchEventReceived?.Invoke(new TouchEvent (TouchEventType.Move, new TouchPoint(e.X, e.Y)));
+            //TouchEventReceived?.Invoke(new TouchEvent (TouchEventType.Move, new TouchPoint(e.X, e.Y)));
         }
 
         private void PictureBoxMouseUp(object sender, MouseEventArgs e)
         {
-            TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Up, new TouchPoint(e.X, e.Y)));
+            //TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Up, new TouchPoint(e.X, e.Y)));
         }
     }
 }

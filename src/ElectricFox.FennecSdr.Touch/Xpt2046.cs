@@ -1,4 +1,5 @@
-﻿using System.Device.Gpio;
+﻿using ElectricFox.EmbeddedApplicationFramework.Touch;
+using System.Device.Gpio;
 using System.Device.Spi;
 
 namespace ElectricFox.FennecSdr.Touch;
@@ -18,18 +19,8 @@ public class Xpt2046 : IDisposable, ITouchController
     private Task? _workerTask;
     private readonly CancellationTokenSource _cts = new();
 
-    private bool _isTouching = false;
-    private TouchPoint _lastPoint;
-    private TouchPoint _stablePoint;
-    private int _stableCount = 0;
-    private DateTime _lastTouchTime;
     private bool _disposedValue;
     private bool _spiActive;
-
-    // Thresholds for debounce and movement
-    private const int MoveThresholdPx = 4;
-    private const int StableCountRequired = 1;
-    private const int ReleaseTimeoutMs = 50;
 
     public Xpt2046(
         int spiBusId,
@@ -153,86 +144,11 @@ public class Xpt2046 : IDisposable, ITouchController
     {
         var now = DateTime.UtcNow;
 
-        const int MinPressure = 50;
-
-        if (pressure < MinPressure)
-        {
-            HandleRelease(now);
-            return;
-        }
-
         var point = Calibrate(rawX, rawY);
-        _lastTouchTime = now;
 
-        Console.WriteLine($"Calibrated to X={point.X} Y={point.Y}");
+        Console.WriteLine($"Calibrated to X={point.X} Y={point.Y}, P={pressure}");
 
-        if (!_isTouching)
-        {
-            BeginTouch(point);
-            return;
-        }
-
-        HandleMove(point);
-    }
-
-    private void HandleRelease(DateTime now)
-    {
-        if (!_isTouching)
-        {
-            return;
-        }
-
-        if ((now - _lastTouchTime).TotalMilliseconds < ReleaseTimeoutMs)
-        {
-            return;
-        }
-
-        _isTouching = false;
-
-        TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Up, _lastPoint));
-    }
-
-    private void BeginTouch(TouchPoint point)
-    {
-        if (_stableCount == 0)
-        {
-            _stablePoint = point;
-        }
-
-        if (
-            Math.Abs(point.X - _stablePoint.X) < MoveThresholdPx
-            && Math.Abs(point.Y - _stablePoint.Y) < MoveThresholdPx
-        )
-        {
-            _stableCount++;
-        }
-        else
-        {
-            _stablePoint = point;
-            _stableCount = 1;
-        }
-
-        if (_stableCount >= StableCountRequired)
-        {
-            _isTouching = true;
-            _lastPoint = _stablePoint;
-            TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Down, _lastPoint));
-        }
-    }
-
-    private void HandleMove(TouchPoint point)
-    {
-        int dx = Math.Abs(point.X - _lastPoint.X);
-        int dy = Math.Abs(point.Y - _lastPoint.Y);
-
-        if (dx < MoveThresholdPx && dy < MoveThresholdPx)
-        {
-            return;
-        }
-
-        _lastPoint = point;
-
-        TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Move, point));
+        TouchEventReceived?.Invoke(new TouchEvent(point));
     }
 
     private TouchPoint Calibrate(int rawX, int rawY)

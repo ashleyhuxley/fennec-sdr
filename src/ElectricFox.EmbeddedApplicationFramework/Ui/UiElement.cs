@@ -1,5 +1,5 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using ElectricFox.FennecSdr.Touch;
+using ElectricFox.EmbeddedApplicationFramework.Touch;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;

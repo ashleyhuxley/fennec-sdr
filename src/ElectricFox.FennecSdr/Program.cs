@@ -19,7 +19,7 @@ public class Program
 
         touch.TouchEventReceived += (te) =>
         {
-            Console.WriteLine($"Touch Event: {te.Type} at {te.Point.X},{te.Point.Y}");
+            Console.WriteLine($"Touch Event: {te.Point.X},{te.Point.Y}");
         };
 
         touch.Start();
