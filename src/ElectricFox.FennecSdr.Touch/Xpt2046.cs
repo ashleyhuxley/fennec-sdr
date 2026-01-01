@@ -28,7 +28,7 @@ public class Xpt2046 : IDisposable, ITouchController
 
     // Thresholds for debounce and movement
     private const int MoveThresholdPx = 4;
-    private const int StableCountRequired = 3;
+    private const int StableCountRequired = 1;
     private const int ReleaseTimeoutMs = 50;
 
     public Xpt2046(

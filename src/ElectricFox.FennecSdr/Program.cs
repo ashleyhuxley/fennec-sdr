@@ -11,7 +11,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var touchCal = new TouchCalibration(369, 3538, 332, 3900, true, false, true);
+        var touchCal = new TouchCalibration(369, 3538, 332, 3900, true, true, false);
         var spiLock = new object();
 
         var lcd = new Ili9341(0, 0, spiLock);
