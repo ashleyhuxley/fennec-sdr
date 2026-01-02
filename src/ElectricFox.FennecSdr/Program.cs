@@ -39,10 +39,13 @@ public class Program
 
         _ = Task.Run(appHost.RunAsync);
 
+        Console.WriteLine("Starting Splash Screen Flow");
+        screenManager.NavigateTo(new SplashScreen(resources));
+        await Task.Delay(2000);
+
         while (true)
         {
-            screenManager.NavigateTo(new SplashScreen(resources));
-            await Task.Delay(2000);
+            Console.WriteLine("Starting Main Menu Flow");
 
             var menuSelection = await screenManager.ShowAsync(new MainMenuScreen(resources));
 

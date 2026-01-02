@@ -43,6 +43,8 @@ public class UiContainer : UiElement
         if (_dirty == null)
             return;
 
+        Console.WriteLine($"UiContainer Render Dirty Rect: {_dirty}");
+
         OnRender(renderer);
 
         foreach (var child in Children)
