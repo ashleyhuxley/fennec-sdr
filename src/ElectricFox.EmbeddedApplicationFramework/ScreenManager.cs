@@ -10,14 +10,19 @@ public sealed class ScreenManager
 
     public void Push(Screen screen)
     {
+        screen.Attach(_host);
         _stack.Push(screen);
         _host.SetScreen(screen);
     }
 
     public void Pop()
     {
-        var screen = _stack.Pop();
-        _host.SetScreen(screen);
+        if (_stack.Count == 0)
+            return;
+
+        _stack.Pop();
+
+        _host.SetScreen(_stack.Count > 0 ? _stack.Peek() : null);
     }
 
     public ScreenManager(AppHost host)
