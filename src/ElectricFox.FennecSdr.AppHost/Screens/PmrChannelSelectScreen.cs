@@ -22,7 +22,7 @@ namespace ElectricFox.FennecSdr.App.Screens
                 10,
                 Color.SkyBlue
             );
-            Children.Add(label);
+            AddChild(label);
 
             const int GridWidth = 75;
             const int GridHeight = 50;
@@ -60,7 +60,7 @@ namespace ElectricFox.FennecSdr.App.Screens
 
                     button.Clicked += Button_Clicked;
 
-                    Children.Add(button);
+                    AddChild(button);
 
                     channel++;
                 }

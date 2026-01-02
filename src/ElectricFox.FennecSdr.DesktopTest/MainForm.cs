@@ -2,7 +2,6 @@ using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.Touch;
 using ElectricFox.EmbeddedApplicationFramework;
-using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.App.Screens;
 using ElectricFox.EmbeddedApplicationFramework.Touch;
 
@@ -10,7 +9,7 @@ namespace ElectricFox.FennecSdr.DesktopTest
 {
     public partial class MainForm : Form, ITouchController
     {
-        private GraphicsRenderer gfx;
+        private readonly GraphicsRenderer gfx;
 
         private readonly BitmapScanlineTarget bitmapTarget;
 
@@ -66,6 +65,7 @@ namespace ElectricFox.FennecSdr.DesktopTest
             var freq = Constants.PmrChannelFrequencies[channel.Value];
 
             screenManager.NavigateTo(ctcssScreen);
+            ctcssScreen.Frequency = freq;
         }
 
         private void PictureBoxMouseDown(object sender, MouseEventArgs e)
@@ -82,6 +82,11 @@ namespace ElectricFox.FennecSdr.DesktopTest
         private void PictureBoxMouseUp(object sender, MouseEventArgs e)
         {
             //TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Up, new TouchPoint(e.X, e.Y)));
+        }
+
+        private void renderTimer_Tick(object sender, EventArgs e)
+        {
+            app.Render();
         }
     }
 }

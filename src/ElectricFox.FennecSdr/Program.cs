@@ -43,7 +43,7 @@ public class Program
         var channel = await screenManager.ShowAsync(new PmrChannelSelectScreen(resources));
         var freq = Constants.PmrChannelFrequencies[channel.Value];
 
-        screenManager.NavigateTo(new CtcssScreen(freq, resources));
+        screenManager.NavigateTo(new CtcssScreen(resources));
 
 
     }

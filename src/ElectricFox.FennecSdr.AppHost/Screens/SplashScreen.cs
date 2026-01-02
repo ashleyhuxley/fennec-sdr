@@ -90,11 +90,11 @@ public class SplashScreen : Screen
         var canvas = new Canvas(320, 240);
         canvas.Rendered += Canvas_Rendered;
 
-        Children.Add(canvas);
+        AddChild(canvas);
 
-        Children.Add(new Picture(_resourceManager.Fennec) { Position = new Point(158, 15) });
+        AddChild(new Picture(_resourceManager.Fennec) { Position = new Point(158, 15) });
 
-        Children.Add(
+        AddChild(
             new Label(
                 "145.400",
                 _resourceManager.Profont17,
@@ -104,9 +104,9 @@ public class SplashScreen : Screen
             )
         );
 
-        Children.Add(new Label("MHz", _resourceManager.Profont17, 105, 42, Color.White));
+        AddChild(new Label("MHz", _resourceManager.Profont17, 105, 42, Color.White));
 
-        Children.Add(
+        AddChild(
             new Label(
                 "FENNEC",
                 _resourceManager.CalBlk36,
@@ -116,6 +116,6 @@ public class SplashScreen : Screen
             )
         );
 
-        Children.Add(new Label("SDR", _resourceManager.CalBlk36, 25, 175, Color.White));
+        AddChild(new Label("SDR", _resourceManager.CalBlk36, 25, 175, Color.White));
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.EmbeddedApplicationFramework.Ui;
 using SixLabors.ImageSharp;
+using System.Runtime.CompilerServices;
 
 namespace ElectricFox.EmbeddedApplicationFramework;
 

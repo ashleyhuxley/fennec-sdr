@@ -24,8 +24,6 @@ public sealed class AppHost
         _current?.OnExit();
         _current = screen;
         _current.OnEnter();
-
-        Render();
     }
 
     public void Update(TimeSpan delta)
@@ -35,7 +33,6 @@ public sealed class AppHost
 
     public void Render()
     {
-        _renderer.Clear(Color.Black);
         _current?.Render(_renderer);
         _renderer.Flush();
     }

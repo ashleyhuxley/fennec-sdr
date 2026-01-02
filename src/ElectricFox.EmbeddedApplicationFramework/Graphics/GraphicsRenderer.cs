@@ -15,6 +15,7 @@ public class GraphicsRenderer
     private readonly IScanlineTarget _target;
     private Rectangle? _dirty;
 
+
     public GraphicsRenderer(IScanlineTarget target)
     {
         _target = target;

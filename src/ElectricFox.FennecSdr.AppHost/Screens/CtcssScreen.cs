@@ -25,17 +25,16 @@ namespace ElectricFox.FennecSdr.App.Screens
         public CtcssScreen(ResourceManager resourceManager)
         {
             _resourceManager = resourceManager;
+            frequencyLabel = new Label($"0.00 MHz", _resourceManager.Tamzen8x15b, 10, 30, Color.Red);
         }
 
         public override void Initialize()
         {
-            frequencyLabel = new Label($"0.00 MHz", _resourceManager.Tamzen8x15b, 10, 30, Color.Red);
-
-            Children.Add(
+            AddChild(
                 new Label("CTCSS Tone Finder", _resourceManager.Profont17, 10, 10, Color.White)
             );
 
-            Children.Add(frequencyLabel);
+            AddChild(frequencyLabel);
         }
 
         public override void OnEnter() { }

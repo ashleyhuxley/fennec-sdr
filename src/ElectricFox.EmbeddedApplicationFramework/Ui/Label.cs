@@ -1,12 +1,23 @@
-﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using ElectricFox.BdfSharp;
+﻿using ElectricFox.BdfSharp;
+using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public class Label : UiElement
 {
-    public string Text { get; set; }
+    private string _text = "";
+
+    public string Text
+    {
+        get => _text;
+        set
+        {
+            _text = value;
+            Invalidate();
+        }
+    }
+
     public Color Color { get; set; }
     public BdfFont Font { get; set; }
 

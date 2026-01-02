@@ -31,7 +31,7 @@ namespace ElectricFox.FennecSdr.App.Screens
 
             ctcssButton.Clicked += CtcssButton_Clicked;
 
-            Children.Add(ctcssButton);
+            AddChild(ctcssButton);
         }
 
         public override void OnEnter() { }

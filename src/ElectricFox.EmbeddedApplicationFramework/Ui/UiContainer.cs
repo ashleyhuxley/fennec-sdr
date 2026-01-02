@@ -12,6 +12,7 @@ public class UiContainer : UiElement
 
     protected void AddChild(UiElement child)
     {
+        child.Parent = this;
         child.Invalidated += OnInvalidated;
         Children.Add(child);
         OnInvalidated(child.Bounds);
@@ -41,10 +42,6 @@ public class UiContainer : UiElement
 
         if (_dirty == null)
             return;
-
-        renderer.PushClip(_dirty.Value);
-
-
 
         OnRender(renderer);
 
