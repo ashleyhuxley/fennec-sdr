@@ -29,11 +29,11 @@ public sealed class AppHost
         }
     }
 
-    public void SetScreen(Screen screen)
+    public void SetScreen(Screen? screen)
     {
         _current?.OnExit();
         _current = screen;
-        _current.OnEnter();
+        _current?.OnEnter();
     }
 
     public void Update(TimeSpan delta)

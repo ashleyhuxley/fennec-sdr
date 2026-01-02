@@ -37,22 +37,31 @@ public class Program
 
         var screenManager = new ScreenManager(appHost);
 
+        var splashScreen = new SplashScreen(resources);
+        splashScreen.Initialize();
+        var mainMenuScreen = new MainMenuScreen(resources);
+        mainMenuScreen.Initialize();
+        var pmrSelectionScreen = new PmrChannelSelectScreen(resources);
+        pmrSelectionScreen.Initialize();
+        var ctcssScreen = new CtcssScreen(resources);
+        ctcssScreen.Initialize();
+
         _ = Task.Run(appHost.RunAsync);
 
         Console.WriteLine("Starting Splash Screen Flow");
-        screenManager.NavigateTo(new SplashScreen(resources));
+        screenManager.NavigateTo(splashScreen);
         await Task.Delay(2000);
 
         while (true)
         {
             Console.WriteLine("Starting Main Menu Flow");
 
-            var menuSelection = await screenManager.ShowAsync(new MainMenuScreen(resources));
+            var menuSelection = await screenManager.ShowAsync(mainMenuScreen);
 
-            var channel = await screenManager.ShowAsync(new PmrChannelSelectScreen(resources));
+            var channel = await screenManager.ShowAsync(pmrSelectionScreen);
             var freq = Constants.PmrChannelFrequencies[channel.Value];
 
-            await screenManager.ShowAsync(new CtcssScreen(resources));
+            await screenManager.ShowAsync(ctcssScreen);
         }
 
     }

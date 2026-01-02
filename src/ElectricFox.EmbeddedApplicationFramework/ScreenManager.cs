@@ -8,6 +8,11 @@ public sealed class ScreenManager
 
     public Screen? Current => _stack.Any() ? _stack.Peek() : null;
 
+    public ScreenManager(AppHost host)
+    {
+        _host = host;
+    }
+
     public void Push(Screen screen)
     {
         screen.Attach(_host);
@@ -18,16 +23,13 @@ public sealed class ScreenManager
     public void Pop()
     {
         if (_stack.Count == 0)
+        { 
             return;
+        }
 
         _stack.Pop();
 
-        _host.SetScreen(_stack.Count > 0 ? _stack.Peek() : null);
-    }
-
-    public ScreenManager(AppHost host)
-    {
-        _host = host;
+        _host.SetScreen(Current);
     }
 
     public async Task<TResult> ShowAsync<TResult>(Screen<TResult> screen)
