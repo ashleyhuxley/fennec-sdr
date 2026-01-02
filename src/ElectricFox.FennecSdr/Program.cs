@@ -29,22 +29,28 @@ public class Program
         var resources = new ResourceManager();
         await resources.LoadAsync();
 
-        var screenManager = new ScreenManager(new AppHost(
+        var appHost = new AppHost(
             new GraphicsRenderer(new LcdScanlineTarget(lcd, 320, 240)),
             touch,
             new Size(320, 240)
-        ));
+        );
 
-        screenManager.NavigateTo(new SplashScreen(resources));
-        await Task.Delay(2000);
+        var screenManager = new ScreenManager(appHost);
 
-        var menuSelection = await screenManager.ShowAsync(new MainMenuScreen(resources));
+        _ = Task.Run(appHost.RunAsync);
 
-        var channel = await screenManager.ShowAsync(new PmrChannelSelectScreen(resources));
-        var freq = Constants.PmrChannelFrequencies[channel.Value];
+        while (true)
+        {
+            screenManager.NavigateTo(new SplashScreen(resources));
+            await Task.Delay(2000);
 
-        screenManager.NavigateTo(new CtcssScreen(resources));
+            var menuSelection = await screenManager.ShowAsync(new MainMenuScreen(resources));
 
+            var channel = await screenManager.ShowAsync(new PmrChannelSelectScreen(resources));
+            var freq = Constants.PmrChannelFrequencies[channel.Value];
+
+            await screenManager.ShowAsync(new CtcssScreen(resources));
+        }
 
     }
 }

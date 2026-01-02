@@ -4,13 +4,14 @@ using SixLabors.ImageSharp;
 
 namespace ElectricFox.FennecSdr.App.Screens
 {
-    public class CtcssScreen : Screen
+    public class CtcssScreen : Screen<bool>
     {
         private readonly ResourceManager _resourceManager;
 
         private double _frequency;
 
         private Label frequencyLabel;
+        private Button closeButton;
 
         public double Frequency
         {
@@ -26,6 +27,19 @@ namespace ElectricFox.FennecSdr.App.Screens
         {
             _resourceManager = resourceManager;
             frequencyLabel = new Label($"0.00 MHz", _resourceManager.Tamzen8x15b, 10, 30, Color.Red);
+            closeButton = new Button("Close", _resourceManager.Profont17)
+            {
+                Position = new Point(220, 200),
+                Width = 80,
+                Height = 30,
+                BackgroundColor = Color.Gray,
+                BorderColor = Color.White
+            };
+
+            closeButton.Clicked += (e) =>
+            {
+                Complete(true);
+            };
         }
 
         public override void Initialize()
@@ -35,6 +49,8 @@ namespace ElectricFox.FennecSdr.App.Screens
             );
 
             AddChild(frequencyLabel);
+
+            AddChild(closeButton);
         }
 
         public override void OnEnter() { }

@@ -19,6 +19,16 @@ public sealed class AppHost
         touch.TouchEventReceived += OnTouch;
     }
 
+    public async Task RunAsync()
+    {
+        while (true)
+        {
+            Render();
+
+            await Task.Delay(16); // ~60 FPS max
+        }
+    }
+
     public void SetScreen(Screen screen)
     {
         _current?.OnExit();
