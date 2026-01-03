@@ -46,9 +46,9 @@ public sealed class ScreenManager
         }
     }
 
-    public void NavigateTo(Screen screen)
+    public void Replace(Screen screen)
     {
-        screen.Attach(_host);
-        _host.SetScreen(screen);
+        _stack.Clear();
+        Push(screen);
     }
 }

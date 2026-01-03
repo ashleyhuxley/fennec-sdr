@@ -56,15 +56,16 @@ namespace ElectricFox.FennecSdr.DesktopTest
 
             this.pictureBox1.Image = this.bitmapTarget.Bitmap;
 
-            screenManager.NavigateTo(splashScreen);
+            screenManager.Push(splashScreen);
             await Task.Delay(2000);
+            screenManager.Pop();
 
             var menuSelection = await screenManager.ShowAsync(mainMenuScreen);
 
             var channel = await screenManager.ShowAsync(pmrSelectionScreen);
             var freq = Constants.PmrChannelFrequencies[channel.Value];
 
-            screenManager.NavigateTo(ctcssScreen);
+            screenManager.Push(ctcssScreen);
             ctcssScreen.Frequency = freq;
         }
 

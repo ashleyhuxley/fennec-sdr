@@ -49,8 +49,10 @@ public class Program
         _ = Task.Run(appHost.RunAsync);
 
         Console.WriteLine("Starting Splash Screen Flow");
-        screenManager.NavigateTo(splashScreen);
+
+        screenManager.Push(splashScreen);
         await Task.Delay(2000);
+        screenManager.Pop();
 
         while (true)
         {
