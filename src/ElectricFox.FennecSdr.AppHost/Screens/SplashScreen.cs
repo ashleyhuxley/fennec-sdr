@@ -1,35 +1,63 @@
-﻿using System.Diagnostics;
+﻿using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using ElectricFox.EmbeddedApplicationFramework;
 using ElectricFox.EmbeddedApplicationFramework.Ui;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
+using System.Diagnostics;
 
 namespace ElectricFox.FennecSdr.App.Screens;
 
 public class SplashScreen : Screen<object?>
 {
     private static readonly Random Rng = new();
-
     private readonly Stopwatch _stopwatch = new();
+    private readonly ILogger<SplashScreen> _logger;
+
+    public SplashScreen(ILogger<SplashScreen> logger)
+    {
+        _logger = logger;
+    }
+
+    protected override void OnInitialize()
+    {
+        _logger.LogDebug("SplashScreen initializing");
+
+        var canvas = new Canvas(320, 240);
+        canvas.Rendered += Canvas_Render;
+
+        AddChild(canvas);
+        AddChild(new Picture(ResourceManager.Images.Fennec) { Position = new Point(158, 15) });
+        AddChild(new Label("145.400", ResourceManager.BdfFonts.Profont17, 33, 42, Color.FromRgb(56, 232, 46)));
+        AddChild(new Label("MHz", ResourceManager.BdfFonts.Profont17, 105, 42, Color.White));
+        AddChild(new Label("FENNEC", ResourceManager.BdfFonts.CalBlk36, 25, 143, Color.FromRgb(252, 111, 0)));
+        AddChild(new Label("SDR", ResourceManager.BdfFonts.CalBlk36, 25, 175, Color.White));
+
+        RequiresRedraw = true;
+
+        _logger.LogInformation("SplashScreen initialized successfully");
+    }
 
     public override void OnEnter()
     {
+        _logger.LogDebug("SplashScreen entered");
         _stopwatch.Restart();
+        Invalidate();
     }
 
     public override void Update(TimeSpan delta)
     {
         if (_stopwatch.Elapsed > TimeSpan.FromSeconds(3))
         {
+            _logger.LogDebug("SplashScreen timeout, completing");
             Complete(null);
         }
         
         base.Update(delta);
     }
 
-    private void Canvas_Rendered(GraphicsRenderer renderer, IResourceProvider resourceProvider)
+    protected void Canvas_Render(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        Console.WriteLine("SplashScreen canvas render");
+        _logger.LogTrace("SplashScreen canvas rendering");
         
         var glyphFont = resourceProvider.GetFont(ResourceManager.BdfFonts.OpenIconicOther2X);
         
@@ -92,45 +120,5 @@ public class SplashScreen : Screen<object?>
         var tightSigma = sigma / sharpness;
 
         return Math.Clamp(std * tightSigma + mean, minValue, maxValue);
-    }
-
-    protected override void OnInitialize()
-    {
-        Console.WriteLine("SplashScreen start initialize");
-        
-        var canvas = new Canvas(320, 240);
-        canvas.Rendered += Canvas_Rendered;
-
-        AddChild(canvas);
-
-        AddChild(new Picture(ResourceManager.Images.Fennec) { Position = new Point(158, 15) });
-
-        AddChild(
-            new Label(
-                "145.400",
-                ResourceManager.BdfFonts.Profont17,
-                33,
-                42,
-                Color.FromRgb(56, 232, 46)
-            )
-        );
-
-        AddChild(new Label("MHz", ResourceManager.BdfFonts.Profont17, 105, 42, Color.White));
-
-        AddChild(
-            new Label(
-                "FENNEC",
-                ResourceManager.BdfFonts.CalBlk36,
-                25,
-                143,
-                Color.FromRgb(252, 111, 0)
-            )
-        );
-
-        AddChild(new Label("SDR", ResourceManager.BdfFonts.CalBlk36, 25, 175, Color.White));
-
-        RequiresRedraw = true;
-        
-        Console.WriteLine("SplashScreen end initialize");
     }
 }

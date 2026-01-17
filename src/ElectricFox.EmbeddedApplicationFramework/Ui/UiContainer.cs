@@ -1,5 +1,6 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.EmbeddedApplicationFramework.Touch;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;
@@ -7,8 +8,11 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 public class UiContainer : UiElement
 {
     private Rectangle? _dirty;
+    private ILogger? _logger;
 
     private List<UiElement> Children { get; } = [];
+
+    protected void SetLogger(ILogger logger) => _logger = logger;
 
     protected void AddChild(UiElement child)
     {
@@ -42,7 +46,7 @@ public class UiContainer : UiElement
             return;
         }
 
-        Console.WriteLine($"UiContainer Render Dirty Rect: {_dirty}");
+        _logger?.LogTrace("UiContainer rendering dirty rect: {DirtyRect}", _dirty);
 
         foreach (var child in Children)
         {

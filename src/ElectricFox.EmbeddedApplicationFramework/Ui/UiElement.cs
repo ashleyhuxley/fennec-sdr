@@ -35,12 +35,14 @@ public abstract class UiElement
 
     protected void Invalidate()
     {
+        RequiresRedraw = true;
         Invalidated?.Invoke(Bounds);
         Parent?.OnChildInvalidated(Bounds);
     }
 
     protected virtual void OnChildInvalidated(Rectangle rect)
     {
+        RequiresRedraw = true;
         Invalidated?.Invoke(rect);
         Parent?.OnChildInvalidated(rect);
     }
