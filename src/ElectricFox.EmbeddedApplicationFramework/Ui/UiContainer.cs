@@ -1,19 +1,33 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.EmbeddedApplicationFramework.Touch;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public class UiContainer : UiElement
 {
-    public List<UiElement> Children { get; } = new();
+    private Rectangle? _dirty;
+    private ILogger? _logger;
 
+    private List<UiElement> Children { get; } = [];
+
+    protected void SetLogger(ILogger logger) => _logger = logger;
+
+    protected void AddChild(UiElement child)
+    {
+        child.Parent = this;
+        child.Invalidated += OnInvalidated;
+        Children.Add(child);
+        OnInvalidated(child.Bounds);
+    }
+    
     public override Size Size
     {
         get
         {
-            int width = 0;
-            int height = 0;
+            var width = 0;
+            var height = 0;
 
             foreach (var child in Children)
             {
@@ -25,17 +39,20 @@ public class UiContainer : UiElement
         }
     }
 
-    public override void Render(GraphicsRenderer renderer)
+    protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        if (!Visible) return;
+        if (!Visible || _dirty == null)
+        {
+            return;
+        }
 
-        OnRender(renderer);
+        _logger?.LogTrace("UiContainer rendering dirty rect: {DirtyRect}", _dirty);
 
         foreach (var child in Children)
-            child.Render(renderer);
+        {
+            child.Render(renderer, resourceProvider);
+        }
     }
-
-    public virtual void OnRender(GraphicsRenderer renderer) { }
 
     public override bool OnTouch(TouchEvent e)
     {
@@ -45,6 +62,14 @@ public class UiContainer : UiElement
                 Children[i].OnTouch(e))
                 return true;
         }
+
         return false;
+    }
+
+    private void OnInvalidated(Rectangle rect)
+    {
+        _dirty = _dirty == null
+            ? rect
+            : Rectangle.Union(_dirty.Value, rect);
     }
 }

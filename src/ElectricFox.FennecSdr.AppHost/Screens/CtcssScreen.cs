@@ -2,24 +2,50 @@
 using ElectricFox.EmbeddedApplicationFramework.Ui;
 using SixLabors.ImageSharp;
 
-namespace ElectricFox.FennecSdr.App.Screens
+namespace ElectricFox.FennecSdr.App.Screens;
+
+public class CtcssScreen : Screen<bool>
 {
-    public class CtcssScreen : Screen
+    private readonly Label _frequencyLabel;
+    private readonly Button _closeButton;
+
+    public double Frequency
     {
-        private readonly ResourceManager _resourceManager;
-
-        private readonly double _frequency;
-
-        public CtcssScreen(double frequency, ResourceManager resourceManager)
+        get;
+        set
         {
-            _frequency = frequency;
-            _resourceManager = resourceManager;
+            field = value;
+            _frequencyLabel.Text = $"{field:0.00} MHz";
         }
+    }
 
-        public override void OnEnter()
+    public CtcssScreen()
+    {
+        _frequencyLabel = new Label($"0.00 MHz", ResourceManager.BdfFonts.Tamzen8x15b, 10, 30, Color.Red);
+        _closeButton = new Button("Close", ResourceManager.BdfFonts.Profont17)
         {
-            Children.Add(new Label("CTCSS Tone Finder", _resourceManager.Profont17, 10, 10, Color.White));
-            Children.Add(new Label($"{_frequency:0.###} MHz", _resourceManager.Tamzen8x15b, 10, 30, Color.Red));
-        }
+            Position = new Point(220, 200),
+            Width = 80,
+            Height = 30,
+            BackgroundColor = Color.Gray,
+            BorderColor = Color.White
+        };
+
+        _closeButton.Clicked += (_) => { Complete(true); };
+    }
+
+    protected override void OnInitialize()
+    {
+        AddChild(
+            new Label("CTCSS Tone Finder", ResourceManager.BdfFonts.Profont17, 10, 10, Color.White)
+        );
+
+        AddChild(_frequencyLabel);
+
+        AddChild(_closeButton);
+    }
+
+    public override void OnEnter()
+    {
     }
 }

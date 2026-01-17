@@ -2,7 +2,6 @@ using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.Touch;
 using ElectricFox.EmbeddedApplicationFramework;
-using ElectricFox.FennecSdr.App;
 using ElectricFox.FennecSdr.App.Screens;
 using ElectricFox.EmbeddedApplicationFramework.Touch;
 
@@ -10,7 +9,7 @@ namespace ElectricFox.FennecSdr.DesktopTest
 {
     public partial class MainForm : Form, ITouchController
     {
-        private GraphicsRenderer gfx;
+        private readonly GraphicsRenderer gfx;
 
         private readonly BitmapScanlineTarget bitmapTarget;
 
@@ -41,20 +40,33 @@ namespace ElectricFox.FennecSdr.DesktopTest
 
         private async void MainFormLoad(object sender, EventArgs e)
         {
-            this.pictureBox1.Image = this.bitmapTarget.Bitmap;
-
+            // Resources
             var resources = new ResourceManager();
             await resources.LoadAsync();
 
-            screenManager.NavigateTo(new SplashScreen(resources));
+            // Screens
+            var splashScreen = new SplashScreen(resources);
+            splashScreen.Initialize();
+            var mainMenuScreen = new MainMenuScreen(resources);
+            mainMenuScreen.Initialize();
+            var pmrSelectionScreen = new PmrChannelSelectScreen(resources);
+            pmrSelectionScreen.Initialize();
+            var ctcssScreen = new CtcssScreen(resources);
+            ctcssScreen.Initialize();
+
+            this.pictureBox1.Image = this.bitmapTarget.Bitmap;
+
+            screenManager.Push(splashScreen);
             await Task.Delay(2000);
+            screenManager.Pop();
 
-            var menuSelection = await screenManager.ShowAsync(new MainMenuScreen(resources));
+            var menuSelection = await screenManager.ShowAsync(mainMenuScreen);
 
-            var channel = await screenManager.ShowAsync(new PmrChannelSelectScreen(resources));
+            var channel = await screenManager.ShowAsync(pmrSelectionScreen);
             var freq = Constants.PmrChannelFrequencies[channel.Value];
 
-            screenManager.NavigateTo(new CtcssScreen(freq, resources));
+            screenManager.Push(ctcssScreen);
+            ctcssScreen.Frequency = freq;
         }
 
         private void PictureBoxMouseDown(object sender, MouseEventArgs e)
@@ -71,6 +83,11 @@ namespace ElectricFox.FennecSdr.DesktopTest
         private void PictureBoxMouseUp(object sender, MouseEventArgs e)
         {
             //TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Up, new TouchPoint(e.X, e.Y)));
+        }
+
+        private void renderTimer_Tick(object sender, EventArgs e)
+        {
+            app.Render();
         }
     }
 }

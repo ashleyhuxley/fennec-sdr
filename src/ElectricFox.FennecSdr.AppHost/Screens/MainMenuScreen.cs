@@ -2,46 +2,42 @@
 using ElectricFox.EmbeddedApplicationFramework.Ui;
 using SixLabors.ImageSharp;
 
-namespace ElectricFox.FennecSdr.App.Screens
+namespace ElectricFox.FennecSdr.App.Screens;
+
+public enum MainMenuItem
 {
-    public enum MainMenuItem
+    CtcssToneFinder,
+    Waterfall
+}
+
+public class MainMenuScreen : Screen<MainMenuItem>
+{
+    protected override void OnInitialize()
     {
-        CtcssToneFinder,
-        Waterfall
+        var ctcssButton = new Button("CTCSS", ResourceManager.BdfFonts.Tamzen8x15b)
+        {
+            Tag = MainMenuItem.CtcssToneFinder,
+            Position = new Point(10, 10),
+            Width = 120,
+            Height = 60
+        };
+
+        ctcssButton.Clicked += CtcssButton_Clicked;
+
+        AddChild(ctcssButton);
     }
 
-    public class MainMenuScreen : Screen<MainMenuItem>
+    public override void OnEnter()
     {
-        private readonly ResourceManager _resourceManager;
+    }
 
-        public MainMenuScreen(ResourceManager resourceManager)
+    private void CtcssButton_Clicked(Button obj)
+    {
+        if (obj.Tag is null)
         {
-            _resourceManager = resourceManager;
+            return;
         }
 
-        public override void OnEnter()
-        {
-            var ctcssButton = new Button("CTCSS", _resourceManager.Tamzen8x15b)
-            {
-                Tag = MainMenuItem.CtcssToneFinder,
-                Position = new Point(10, 10),
-                Width = 120,
-                Height = 60
-            };
-
-            ctcssButton.Clicked += CtcssButton_Clicked;
-
-            Children.Add(ctcssButton);
-        }
-
-        private void CtcssButton_Clicked(Button obj)
-        {
-            if (obj.Tag is null)
-            {
-                return;
-            }
-
-            Complete((MainMenuItem)obj.Tag);
-        }
+        Complete((MainMenuItem)obj.Tag);
     }
 }

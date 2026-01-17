@@ -1,61 +1,70 @@
-﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using ElectricFox.EmbeddedApplicationFramework;
+﻿using ElectricFox.EmbeddedApplicationFramework;
+using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.EmbeddedApplicationFramework.Ui;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
+using System.Diagnostics;
 
 namespace ElectricFox.FennecSdr.App.Screens;
 
-public class SplashScreen : Screen
+public class SplashScreen : Screen<object?>
 {
-    private static readonly Random _rng = new();
+    private static readonly Random Rng = new();
+    private readonly Stopwatch _stopwatch = new();
+    private readonly ILogger<SplashScreen> _logger;
 
-    private readonly ResourceManager _resourceManager;
-
-    public SplashScreen(ResourceManager resourceManager)
+    public SplashScreen(ILogger<SplashScreen> logger)
     {
-        _resourceManager = resourceManager;
+        _logger = logger;
+    }
+
+    protected override void OnInitialize()
+    {
+        _logger.LogDebug("SplashScreen initializing");
+
+        var canvas = new Canvas(320, 240);
+        canvas.Rendered += Canvas_Render;
+
+        AddChild(canvas);
+        AddChild(new Picture(ResourceManager.Images.Fennec) { Position = new Point(158, 15) });
+        AddChild(new Label("145.400", ResourceManager.BdfFonts.Profont17, 33, 42, Color.FromRgb(56, 232, 46)));
+        AddChild(new Label("MHz", ResourceManager.BdfFonts.Profont17, 105, 42, Color.White));
+        AddChild(new Label("FENNEC", ResourceManager.BdfFonts.CalBlk36, 25, 143, Color.FromRgb(252, 111, 0)));
+        AddChild(new Label("SDR", ResourceManager.BdfFonts.CalBlk36, 25, 175, Color.White));
+
+        RequiresRedraw = true;
+
+        _logger.LogInformation("SplashScreen initialized successfully");
     }
 
     public override void OnEnter()
     {
-        var canvas = new Canvas(this.App.ScreenSize.Width, this.App.ScreenSize.Height);
-        canvas.Rendered += Canvas_Rendered;
-
-        Children.Add(canvas);
-
-        Children.Add(new Picture(_resourceManager.Fennec) { Position = new Point(158, 15) });
-
-        Children.Add(
-            new Label(
-                "145.400",
-                _resourceManager.Profont17,
-                33,
-                42,
-                Color.FromRgb(56, 232, 46)
-            )
-        );
-
-        Children.Add(new Label("MHz", _resourceManager.Profont17, 105, 42, Color.White));
-
-        Children.Add(
-            new Label(
-                "FENNEC",
-                _resourceManager.CalBlk36,
-                25,
-                143,
-                Color.FromRgb(252, 111, 0)
-            )
-        );
-
-        Children.Add(new Label("SDR", _resourceManager.CalBlk36, 25, 175, Color.White));
+        _logger.LogDebug("SplashScreen entered");
+        _stopwatch.Restart();
+        Invalidate();
     }
 
-    private void Canvas_Rendered(GraphicsRenderer renderer)
+    public override void Update(TimeSpan delta)
     {
-        renderer.DrawRect(25, 35, 270, 100, Color.DarkGrey, 2);
-        renderer.DrawGlyph(6, _resourceManager.OpenIconicOther2x!, 115, 186, Color.Yellow);
+        if (_stopwatch.Elapsed > TimeSpan.FromSeconds(3))
+        {
+            _logger.LogDebug("SplashScreen timeout, completing");
+            Complete(null);
+        }
+        
+        base.Update(delta);
+    }
 
-        for (int y = 70; y < 120; y += 10)
+    protected void Canvas_Render(GraphicsRenderer renderer, IResourceProvider resourceProvider)
+    {
+        _logger.LogTrace("SplashScreen canvas rendering");
+        
+        var glyphFont = resourceProvider.GetFont(ResourceManager.BdfFonts.OpenIconicOther2X);
+        
+        renderer.DrawRect(25, 35, 270, 100, Color.DarkGrey, 2);
+        renderer.DrawGlyph(6, glyphFont, 115, 186, Color.Yellow);
+
+        for (var y = 70; y < 120; y += 10)
         {
             renderer.DrawLine(33, y, 155, y, y == 70 ? Color.Blue : Color.LightGrey);
         }
@@ -65,63 +74,50 @@ public class SplashScreen : Screen
 
         var data = GetMultiModalList(25, 300, 50).ToList();
 
-        for (int i = 0; i < data.Count - 1; i++)
+        for (var i = 0; i < data.Count - 1; i++)
         {
-            int x1 = 35 + i * 5;
-            int y1 = 115 - data[i];
+            var x1 = 35 + i * 5;
+            var y1 = 115 - data[i];
             renderer.FillRect(x1, y1, 4, data[i], Color.LightBlue);
         }
     }
 
     private static IEnumerable<int> GetMultiModalList(int count, int samples, int max)
     {
-        List<int> list = new();
-        for (int i = 0; i < samples; i++)
+        List<int> list = [];
+        for (var i = 0; i < samples; i++)
         {
             list.Add(Convert.ToInt32(RandomSharpPeak(0.0f, count)));
         }
 
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             yield return Math.Clamp(list.Count(l => l == i), 1, max);
         }
     }
 
-    public static float RandomSharpPeak(
+    private static float RandomSharpPeak(
         float minValue = 0.0f,
         float maxValue = 1.0f,
         float sharpness = 1.4f
     )
     {
-        float u,
-            v,
-            S;
+        float u;
+        float s;
 
         do
         {
-            u = 2.0f * (float)_rng.NextDouble() - 1.0f;
-            v = 2.0f * (float)_rng.NextDouble() - 1.0f;
-            S = u * u + v * v;
-        } while (S >= 1.0f || S == 0f);
+            u = 2.0f * (float)Rng.NextDouble() - 1.0f;
+            var v = 2.0f * (float)Rng.NextDouble() - 1.0f;
+            s = u * u + v * v;
+        } while (s >= 1.0f || (s - 0f < 0.0001f));
 
-        // Standard Normal Distribution
-        float std = (float)(u * Math.Sqrt(-2.0f * Math.Log(S) / S));
+        var std = (float)(u * Math.Sqrt(-2.0f * Math.Log(s) / s));
 
-        // 1. Calculate Mean and Sigma
-        float mean = (minValue + maxValue) / 2.0f;
-        float sigma = (maxValue - mean) / 3.0f;
+        var mean = (minValue + maxValue) / 2.0f;
+        var sigma = (maxValue - mean) / 3.0f;
 
-        // 2. Apply Sharpness
-        // We normalize the 'std', apply a power to push values toward 0,
-        // then re-scale by sigma and move to mean.
-        // High sharpness (e.g., 3.0) creates a needle-like peak.
-        float sign = Math.Sign(std);
-        float sharpened = sign * (float)Math.Pow(Math.Abs(std), 1.0f / sharpness);
-
-        // Note: To get a SHARP peak (more values at center),
-        // we actually want to shrink the 'std' result before scaling.
-        // Alternatively, just reduce sigma significantly:
-        float tightSigma = sigma / sharpness;
+        var tightSigma = sigma / sharpness;
 
         return Math.Clamp(std * tightSigma + mean, minValue, maxValue);
     }

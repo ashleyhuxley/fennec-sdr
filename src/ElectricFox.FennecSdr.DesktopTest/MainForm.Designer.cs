@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             pictureBox1 = new PictureBox();
+            renderTimer = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -42,6 +44,12 @@
             pictureBox1.MouseDown += PictureBoxMouseDown;
             pictureBox1.MouseMove += PictureBoxMouseMove;
             pictureBox1.MouseUp += PictureBoxMouseUp;
+            // 
+            // renderTimer
+            // 
+            renderTimer.Enabled = true;
+            renderTimer.Interval = 10;
+            renderTimer.Tick += renderTimer_Tick;
             // 
             // MainForm
             // 
@@ -59,5 +67,6 @@
         #endregion
 
         private PictureBox pictureBox1;
+        private System.Windows.Forms.Timer renderTimer;
     }
 }

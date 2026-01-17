@@ -5,7 +5,7 @@ public static class Constants
     public const int RtlSdrSampleRate = 12000;  
 
     public static readonly double[] PmrChannelFrequencies =
-    {
+    [
         446.00625,
         446.01875,
         446.03125,
@@ -22,5 +22,5 @@ public static class Constants
         446.16875,
         446.18125,
         446.19375
-    };
+    ];
 }

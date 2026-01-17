@@ -1,23 +1,12 @@
 ﻿namespace ElectricFox.EmbeddedApplicationFramework.Touch;
 
-public readonly struct TouchPoint
+public readonly struct TouchPoint(int x, int y)
 {
-    public int X { get; }
-    public int Y { get; }
-
-    public TouchPoint(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
+    public int X { get; } = x;
+    public int Y { get; } = y;
 }
 
-public readonly struct TouchEvent
+public readonly struct TouchEvent(TouchPoint point)
 {
-    public TouchPoint Point { get; }
-
-    public TouchEvent(TouchPoint point)
-    {
-        Point = point;
-    }
+    public TouchPoint Point { get; } = point;
 }

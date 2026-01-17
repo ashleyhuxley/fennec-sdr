@@ -6,17 +6,21 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public class Picture : UiElement
 {
-    public Image<Rgba32> Image { get; set; }
+    private Size _size;
+    
+    public string Image { get; set; }
 
-    public override Size Size => new(Image.Width, Image.Height);
+    public override Size Size => _size;
 
-    public Picture(Image<Rgba32> image)
+    public Picture(string image)
     {
         Image = image;
     }
 
-    public override void Render(GraphicsRenderer renderer)
+    protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        renderer.DrawImage(Position.X, Position.Y, Image);
+        var image = resourceProvider.GetImage(Image);
+        _size = image.Size;
+        renderer.DrawImage(Position.X, Position.Y, image);
     }
 }

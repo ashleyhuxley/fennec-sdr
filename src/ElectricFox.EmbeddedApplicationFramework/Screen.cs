@@ -1,5 +1,4 @@
-﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using ElectricFox.EmbeddedApplicationFramework.Ui;
+﻿using ElectricFox.EmbeddedApplicationFramework.Ui;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework;
@@ -16,27 +15,29 @@ public abstract class Screen : UiContainer
     public virtual void OnExit() { }
 
     public virtual void Update(TimeSpan delta) { }
-
-    public override void OnRender(GraphicsRenderer renderer)
-    {
-        renderer.Clear(BackgroundColor);
-        base.OnRender(renderer);
-    }
 }
 
 public abstract class Screen<TResult> : Screen
 {
-    private readonly TaskCompletionSource<TResult> _tcs = new();
+    private TaskCompletionSource<TResult> _cts = new();
 
-    public Task<TResult> Result => _tcs.Task;
+    public Task<TResult> Result => _cts.Task;
 
     protected void Complete(TResult result)
     {
-        _tcs.TrySetResult(result);
+        _cts.TrySetResult(result);
     }
 
     protected void Cancel()
     {
-        _tcs.TrySetCanceled();
+        _cts.TrySetCanceled();
     }
+
+    public void Initialize()
+    {
+        _cts = new TaskCompletionSource<TResult>();
+        OnInitialize();
+    }
+
+    protected abstract void OnInitialize();
 }

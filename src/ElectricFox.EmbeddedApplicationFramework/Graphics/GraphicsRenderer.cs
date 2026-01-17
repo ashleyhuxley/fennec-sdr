@@ -15,6 +15,7 @@ public class GraphicsRenderer
     private readonly IScanlineTarget _target;
     private Rectangle? _dirty;
 
+
     public GraphicsRenderer(IScanlineTarget target)
     {
         _target = target;
@@ -50,9 +51,9 @@ public class GraphicsRenderer
     {
         var data = font.RenderBitmap([i], GlyphLookupOption.UseIndex);
 
-        for (int ax = 0; ax < data.GetLength(0); ax++)
+        for (var ax = 0; ax < data.GetLength(0); ax++)
         {
-            for (int ay = 0; ay < data.GetLength(1); ay++)
+            for (var ay = 0; ay < data.GetLength(1); ay++)
             {
                 if (data[ax, ay])
                 {
