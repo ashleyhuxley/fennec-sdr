@@ -58,7 +58,7 @@ public class SdrApp
                     {
                         var ctcssScreen = new CtcssScreen
                         {
-                            Frequency = Constants.PmrChannelFrequencies[pmrChannel.Value]
+                            Frequency = Constants.PmrChannelFrequencies[pmrChannel.Value - 1]
                         };
                         await screenManager.ShowAsync(ctcssScreen);
                     }

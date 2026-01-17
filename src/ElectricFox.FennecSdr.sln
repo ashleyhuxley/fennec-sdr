@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr.Touch
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr.Display", "ElectricFox.FennecSdr.Display\ElectricFox.FennecSdr.Display.csproj", "{5E6D18B8-1119-4DA2-820F-DD1781C4743A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr.App", "ElectricFox.FennecSdr.AppHost\ElectricFox.FennecSdr.App.csproj", "{95078039-C173-4D5D-90A4-FE0D1CF420C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr.App", "ElectricFox.FennecSdr.App\ElectricFox.FennecSdr.App.csproj", "{95078039-C173-4D5D-90A4-FE0D1CF420C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.EmbeddedApplicationFramework", "ElectricFox.EmbeddedApplicationFramework\ElectricFox.EmbeddedApplicationFramework.csproj", "{AC11847E-894B-40FC-8A43-39BC387AE7C6}"
 EndProject
