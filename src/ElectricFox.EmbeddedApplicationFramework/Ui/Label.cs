@@ -6,31 +6,24 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public class Label : UiElement
 {
-    private string _text = "";
+    private Size _size;
 
     public string Text
     {
-        get => _text;
+        get;
         set
         {
-            _text = value;
+            field = value;
             Invalidate();
         }
     }
 
     public Color Color { get; set; }
-    public BdfFont Font { get; set; }
+    public string Font { get; set; }
+    
+    public override Size Size => _size;
 
-    public override Size Size
-    {
-        get
-        {
-            var rect = Font.MeasureString(Text);
-            return new Size(rect.Width, rect.Height);
-        }
-    }
-
-    public Label(string text, BdfFont font, int x, int y, Color color)
+    public Label(string text, string font, int x, int y, Color color)
     {
         Text = text;
         Font = font;
@@ -38,8 +31,13 @@ public class Label : UiElement
         Color = color;
     }
 
-    public override void Render(GraphicsRenderer renderer)
+    protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        renderer.DrawText(Text, Font, Position.X, Position.Y, Color);
+        var bdfFont = resourceProvider.GetFont(Font);
+        
+        var rect = bdfFont.MeasureString(Text);
+        _size = new Size(rect.Width, rect.Height);
+        
+        renderer.DrawText(Text, bdfFont, Position.X, Position.Y, Color);
     }
 }

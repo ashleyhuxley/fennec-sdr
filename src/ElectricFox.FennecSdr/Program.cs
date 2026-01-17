@@ -1,10 +1,6 @@
 ﻿using ElectricFox.FennecSdr.Touch;
 using ElectricFox.FennecSdr.Display;
 using ElectricFox.FennecSdr.App;
-using ElectricFox.FennecSdr.App.Screens;
-using ElectricFox.EmbeddedApplicationFramework;
-using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using SixLabors.ImageSharp;
 
 namespace ElectricFox.FennecSdr;
 
@@ -28,43 +24,5 @@ public class Program
 
         var resources = new ResourceManager();
         await resources.LoadAsync();
-
-        var appHost = new AppHost(
-            new GraphicsRenderer(new LcdScanlineTarget(lcd, 320, 240)),
-            touch,
-            new Size(320, 240)
-        );
-
-        var screenManager = new ScreenManager(appHost);
-
-        var splashScreen = new SplashScreen(resources);
-        splashScreen.Initialize();
-        var mainMenuScreen = new MainMenuScreen(resources);
-        mainMenuScreen.Initialize();
-        var pmrSelectionScreen = new PmrChannelSelectScreen(resources);
-        pmrSelectionScreen.Initialize();
-        var ctcssScreen = new CtcssScreen(resources);
-        ctcssScreen.Initialize();
-
-        _ = Task.Run(appHost.RunAsync);
-
-        Console.WriteLine("Starting Splash Screen Flow");
-
-        screenManager.Push(splashScreen);
-        await Task.Delay(2000);
-        screenManager.Pop();
-
-        while (true)
-        {
-            Console.WriteLine("Starting Main Menu Flow");
-
-            var menuSelection = await screenManager.ShowAsync(mainMenuScreen);
-
-            var channel = await screenManager.ShowAsync(pmrSelectionScreen);
-            var freq = Constants.PmrChannelFrequencies[channel.Value];
-
-            await screenManager.ShowAsync(ctcssScreen);
-        }
-
     }
 }

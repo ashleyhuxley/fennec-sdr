@@ -119,39 +119,4 @@ public class Ili9341
             (byte)((y + h - 1) >> 8), (byte)(y + h - 1)
         });
     }
-
-    public void FillScreen(ushort color)
-    {
-        const int Width = 320;
-        const int Height = 240;
-
-        WriteCommand(0x2A); // Column addr
-        WriteData(stackalloc byte[]
-        {
-            0x00, 0x00,
-            (byte)((Width - 1) >> 8),
-            (byte)((Width - 1) & 0xFF)
-        });
-
-        WriteCommand(0x2B); // Page addr
-        WriteData(stackalloc byte[]
-        {
-            0x00, 0x00,
-            (byte)((Height - 1) >> 8),
-            (byte)((Height - 1) & 0xFF)
-        });
-
-        WriteCommand(0x2C); // Memory write
-
-        Span<byte> line = stackalloc byte[Width * 2];
-        for (int i = 0; i < line.Length; i += 2)
-        {
-            line[i] = (byte)(color >> 8);
-            line[i + 1] = (byte)(color & 0xFF);
-        }
-
-        _gpio.Write(DcPin, PinValue.High);
-        for (int y = 0; y < Height; y++)
-            _spi.Write(line);
-    }   
 }

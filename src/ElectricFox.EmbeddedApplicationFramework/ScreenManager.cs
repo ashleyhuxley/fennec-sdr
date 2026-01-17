@@ -38,6 +38,7 @@ public sealed class ScreenManager
 
         try
         {
+            screen.Initialize();
             return await screen.Result;
         }
         finally

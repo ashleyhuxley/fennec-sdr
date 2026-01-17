@@ -7,7 +7,7 @@ public class Canvas : UiElement
 {
     public override Size Size => new(Width, Height);
 
-    public event Action<GraphicsRenderer>? Rendered;
+    public event Action<GraphicsRenderer, IResourceProvider>? Rendered;
 
     public int Width { get; }
 
@@ -19,8 +19,8 @@ public class Canvas : UiElement
         Height = height;
     }
 
-    public override void Render(GraphicsRenderer renderer)
+    protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        Rendered?.Invoke(renderer);
+        Rendered?.Invoke(renderer, resourceProvider);
     }
 }

@@ -142,8 +142,6 @@ public class Xpt2046 : IDisposable, ITouchController
 
     private void ProcessRawSample(int rawX, int rawY, int pressure)
     {
-        var now = DateTime.UtcNow;
-
         var point = Calibrate(rawX, rawY);
 
         Console.WriteLine($"Calibrated to X={point.X} Y={point.Y}, P={pressure}");

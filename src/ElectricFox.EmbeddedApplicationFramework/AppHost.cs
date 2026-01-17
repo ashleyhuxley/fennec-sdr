@@ -1,6 +1,6 @@
-﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
+﻿using System.Diagnostics;
+using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.EmbeddedApplicationFramework.Touch;
-using ElectricFox.FennecSdr.Touch;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework;
@@ -8,24 +8,37 @@ namespace ElectricFox.EmbeddedApplicationFramework;
 public sealed class AppHost
 {
     private readonly GraphicsRenderer _renderer;
+    private readonly IResourceProvider _resources;
     private Screen? _current;
     public Size ScreenSize { get; private set; }
 
-    public AppHost(GraphicsRenderer renderer, ITouchController touch, Size screenSize)
+    public AppHost(
+        GraphicsRenderer renderer, 
+        ITouchController touch, 
+        Size screenSize,
+        IResourceProvider resources)
     {
         _renderer = renderer;
         ScreenSize = screenSize;
+        _resources = resources;
 
         touch.TouchEventReceived += OnTouch;
     }
 
-    public async Task RunAsync()
+    public async Task RunAsync(CancellationToken token)
     {
-        while (true)
+        var sw = Stopwatch.StartNew();
+        var last = sw.Elapsed;
+        
+        while (!token.IsCancellationRequested)
         {
+            var now = sw.Elapsed;
+            Update(now - last);
+            last = now;
+            
             Render();
 
-            await Task.Delay(16); // ~60 FPS max
+            await Task.Delay(16, token); // ~60 FPS max
         }
     }
 
@@ -33,17 +46,30 @@ public sealed class AppHost
     {
         _current?.OnExit();
         _current = screen;
-        _current?.OnEnter();
+
+        if (_current is null)
+        {
+            return;
+        }
+        
+        _current.OnEnter();
+        _renderer.Clear(_current.BackgroundColor);
+        _renderer.Flush();
     }
 
-    public void Update(TimeSpan delta)
+    private void Update(TimeSpan delta)
     {
         _current?.Update(delta);
     }
 
-    public void Render()
+    private void Render()
     {
-        _current?.Render(_renderer);
+        if (_current is null)
+        {
+            return;
+        }
+        
+        _current?.Render(_renderer, _resources);
         _renderer.Flush();
     }
 

@@ -8,7 +8,7 @@ public class UiContainer : UiElement
 {
     private Rectangle? _dirty;
 
-    private List<UiElement> Children { get; } = new();
+    private List<UiElement> Children { get; } = [];
 
     protected void AddChild(UiElement child)
     {
@@ -17,13 +17,13 @@ public class UiContainer : UiElement
         Children.Add(child);
         OnInvalidated(child.Bounds);
     }
-
+    
     public override Size Size
     {
         get
         {
-            int width = 0;
-            int height = 0;
+            var width = 0;
+            var height = 0;
 
             foreach (var child in Children)
             {
@@ -35,23 +35,20 @@ public class UiContainer : UiElement
         }
     }
 
-    public override void Render(GraphicsRenderer renderer)
+    protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        if (!Visible)
+        if (!Visible || _dirty == null)
+        {
             return;
-
-        if (_dirty == null)
-            return;
+        }
 
         Console.WriteLine($"UiContainer Render Dirty Rect: {_dirty}");
 
-        OnRender(renderer);
-
         foreach (var child in Children)
-            child.Render(renderer);
+        {
+            child.Render(renderer, resourceProvider);
+        }
     }
-
-    public virtual void OnRender(GraphicsRenderer renderer) { }
 
     public override bool OnTouch(TouchEvent e)
     {

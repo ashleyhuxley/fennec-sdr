@@ -4,7 +4,7 @@ namespace ElectricFox.FennecSdr.RtlSdrLib;
 
 public sealed class RtlSdrRadioSource : IRadioSource
 {
-    private const string RTL_FM_PATH = "rtl_fm";
+    private const string RtlFmPath = "rtl_fm";
 
     public uint Frequency { get; set; } = 145_500_000;
     public int Gain { get; set; } = 40;
@@ -30,7 +30,7 @@ public sealed class RtlSdrRadioSource : IRadioSource
 
         var psi = new ProcessStartInfo
         {
-            FileName = RTL_FM_PATH,
+            FileName = RtlFmPath,
             Arguments = $"-f {Frequency} -M fm -s {SampleRate} -g {Gain}",
             RedirectStandardOutput = true,
             RedirectStandardError = true,

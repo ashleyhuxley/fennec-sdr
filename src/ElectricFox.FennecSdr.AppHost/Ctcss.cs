@@ -3,7 +3,7 @@
 public class Ctcss
 {
     public static readonly double[] CtcssTones =
-    {
+    [
         67.0,
         71.9,
         77.0,
@@ -24,7 +24,7 @@ public class Ctcss
         218.1,
         233.6,
         250.3
-    };
+    ];
 
     public static void DisplayHistogram(Dictionary<double, double> ctcssTones)
     {

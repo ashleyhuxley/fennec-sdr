@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr", "ElectricFox.FennecSdr\ElectricFox.FennecSdr.csproj", "{C6B8EC97-DAAF-44D0-A127-2378BF55F410}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.EmbeddedApplicationFramework", "ElectricFox.EmbeddedApplicationFramework\ElectricFox.EmbeddedApplicationFramework.csproj", "{AC11847E-894B-40FC-8A43-39BC387AE7C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr.RtlSdrLib", "ElectricFox.FennecSdr.RtlSdrLib\ElectricFox.FennecSdr.RtlSdrLib.csproj", "{2C4D19D4-2D2F-4DB6-AF56-ECE6D09F51C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElectricFox.FennecSdr.DesktopTestAvalonia", "ElectricFox.FennecSdr.DesktopTestAvalonia\ElectricFox.FennecSdr.DesktopTestAvalonia.csproj", "{F860E290-AAA5-4DD5-B41A-0AB640E04C6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{2C4D19D4-2D2F-4DB6-AF56-ECE6D09F51C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C4D19D4-2D2F-4DB6-AF56-ECE6D09F51C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C4D19D4-2D2F-4DB6-AF56-ECE6D09F51C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F860E290-AAA5-4DD5-B41A-0AB640E04C6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F860E290-AAA5-4DD5-B41A-0AB640E04C6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F860E290-AAA5-4DD5-B41A-0AB640E04C6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F860E290-AAA5-4DD5-B41A-0AB640E04C6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

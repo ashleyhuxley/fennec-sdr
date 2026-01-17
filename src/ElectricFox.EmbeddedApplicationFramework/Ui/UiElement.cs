@@ -6,6 +6,7 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public abstract class UiElement
 {
+    public bool RequiresRedraw { get; protected set; } = true;
     public object? Tag { get; set; }
     public Point Position { get; set; }
     public abstract Size Size { get; }
@@ -15,7 +16,21 @@ public abstract class UiElement
 
     public event Action<Rectangle>? Invalidated;
 
-    public virtual void Render(GraphicsRenderer renderer) { }
+    public void Render(GraphicsRenderer renderer, IResourceProvider resourceProvider)
+    {
+        if (!RequiresRedraw)
+        {
+            return;
+        }
+        
+        OnRender(renderer, resourceProvider);
+        RequiresRedraw = false;
+    }
+
+    protected virtual void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
+    {
+    }
+    
     public virtual bool OnTouch(TouchEvent e) => false;
 
     protected void Invalidate()
