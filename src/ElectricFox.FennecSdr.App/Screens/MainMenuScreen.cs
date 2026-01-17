@@ -16,6 +16,19 @@ public class MainMenuScreen : Screen<MainMenuItem>
 {
     protected override void OnInitialize()
     {
+        var groupBox = new GroupBox("Main Menu", ResourceManager.BdfFonts.Profont17)
+        {
+            Position = new Point(10, 10),
+            BorderColor = Color.White,
+            TextColor = Color.FromRgb(30, 0, 255),
+            BorderWidth = 2,
+            Padding = 4,
+            Width = 300,
+            Height = 210
+        };
+
+        AddChild(groupBox);
+
         var ctcssButton = new Button("CTCSS", ResourceManager.BdfFonts.Tamzen8x15b)
         {
             Tag = MainMenuItem.CtcssToneFinder,
@@ -53,10 +66,10 @@ public class MainMenuScreen : Screen<MainMenuItem>
         sMeterButton.Clicked += Button_Clicked;
         exitButton.Clicked += Button_Clicked;
 
-        AddChild(ctcssButton);
-        AddChild(waterfallButton);
-        AddChild(sMeterButton);
-        AddChild(exitButton);
+        groupBox.AddChild(ctcssButton);
+        groupBox.AddChild(waterfallButton);
+        groupBox.AddChild(sMeterButton);
+        groupBox.AddChild(exitButton);
     }
 
     public override void OnEnter()

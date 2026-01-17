@@ -11,6 +11,16 @@ public class UiContainer : UiElement
     private ILogger? _logger;
 
     private List<UiElement> Children { get; } = [];
+    
+    /// <summary>
+    /// Padding applied to child controls
+    /// </summary>
+    public int Padding { get; set; } = 0;
+    
+    /// <summary>
+    /// Offset applied to children based on padding
+    /// </summary>
+    public override Point ChildOffset => new(Padding, Padding);
 
     public UiContainer()
     {
@@ -20,7 +30,7 @@ public class UiContainer : UiElement
 
     protected void SetLogger(ILogger logger) => _logger = logger;
 
-    protected void AddChild(UiElement child)
+    public void AddChild(UiElement child)
     {
         child.Parent = this;
         child.Invalidated += OnInvalidated;
@@ -40,11 +50,15 @@ public class UiContainer : UiElement
 
             foreach (var child in Children)
             {
-                width = Math.Max(width, child.Bounds.Right);
-                height = Math.Max(height, child.Bounds.Bottom);
+                // Calculate size based on child's relative position + size + padding
+                var childRight = child.Position.X + child.Size.Width;
+                var childBottom = child.Position.Y + child.Size.Height;
+                width = Math.Max(width, childRight);
+                height = Math.Max(height, childBottom);
             }
 
-            return new Size(width, height);
+            // Add padding to both sides
+            return new Size(width + Padding * 2, height + Padding * 2);
         }
     }
 

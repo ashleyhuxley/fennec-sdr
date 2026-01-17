@@ -29,6 +29,11 @@ public class GraphicsRenderer
         MarkDirty(new Rectangle(0, 0, _target.Width, _target.Height));
     }
 
+    private bool IsInBouds(int x, int y)
+    {
+        return x >= 0 && x < _image.Width && y >= 0 && y < _image.Height;
+    }
+
     public void DrawText(string text, BdfFont font, int x, int y, Color color)
     {
         var data = font.RenderBitmap(text);
@@ -39,7 +44,10 @@ public class GraphicsRenderer
             {
                 if (data[ax, ay])
                 {
-                    _image[ax + x, ay + y] = color;
+                    if (IsInBouds(ax + x, ay + y))
+                    {
+                        _image[ax + x, ay + y] = color;
+                    }
                 }
             }
         }
