@@ -7,7 +7,9 @@ namespace ElectricFox.FennecSdr.App.Screens;
 public enum MainMenuItem
 {
     CtcssToneFinder,
-    Waterfall
+    Waterfall,
+    SMeter,
+    Exit
 }
 
 public class MainMenuScreen : Screen<MainMenuItem>
@@ -22,16 +24,46 @@ public class MainMenuScreen : Screen<MainMenuItem>
             Height = 60
         };
 
-        ctcssButton.Clicked += CtcssButton_Clicked;
+        var waterfallButton = new Button("Waterfall", ResourceManager.BdfFonts.Tamzen8x15b)
+        {
+            Tag = MainMenuItem.Waterfall,
+            Position = new Point(140, 10),
+            Width = 120,
+            Height = 60
+        };
+
+        var sMeterButton = new Button("S-Meter", ResourceManager.BdfFonts.Tamzen8x15b)
+        {
+            Tag = MainMenuItem.SMeter,
+            Position = new Point(10, 80),
+            Width = 120,
+            Height = 60
+        };
+
+        var exitButton = new Button("Exit", ResourceManager.BdfFonts.Tamzen8x15b)
+        {
+            Tag = MainMenuItem.Exit,
+            Position = new Point(140, 80),
+            Width = 120,
+            Height = 60
+        };
+
+        ctcssButton.Clicked += Button_Clicked;
+        waterfallButton.Clicked += Button_Clicked;
+        sMeterButton.Clicked += Button_Clicked;
+        exitButton.Clicked += Button_Clicked;
 
         AddChild(ctcssButton);
+        AddChild(waterfallButton);
+        AddChild(sMeterButton);
+        AddChild(exitButton);
     }
 
     public override void OnEnter()
     {
     }
 
-    private void CtcssButton_Clicked(Button obj)
+    private void Button_Clicked(Button obj)
     {
         if (obj.Tag is null)
         {
