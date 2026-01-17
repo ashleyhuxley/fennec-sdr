@@ -12,6 +12,12 @@ public class UiContainer : UiElement
 
     private List<UiElement> Children { get; } = [];
 
+    public UiContainer()
+    {
+        // Subscribe to our own Invalidated event to track dirty rectangles
+        Invalidated += OnInvalidated;
+    }
+
     protected void SetLogger(ILogger logger) => _logger = logger;
 
     protected void AddChild(UiElement child)
@@ -19,7 +25,10 @@ public class UiContainer : UiElement
         child.Parent = this;
         child.Invalidated += OnInvalidated;
         Children.Add(child);
-        OnInvalidated(child.Bounds);
+        
+        // Call the base Invalidate() instead of OnInvalidated directly
+        // This ensures RequiresRedraw gets set
+        Invalidate();
     }
     
     public override Size Size
@@ -47,6 +56,9 @@ public class UiContainer : UiElement
         }
 
         _logger?.LogTrace("UiContainer rendering dirty rect: {DirtyRect}", _dirty);
+        
+        // Clear dirty rect after we've decided to render
+        _dirty = null;
 
         foreach (var child in Children)
         {

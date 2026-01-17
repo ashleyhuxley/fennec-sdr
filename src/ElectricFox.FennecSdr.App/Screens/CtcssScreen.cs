@@ -15,7 +15,7 @@ public class CtcssScreen : Screen<bool>
         set
         {
             field = value;
-            _frequencyLabel.Text = $"{field:0.00} MHz";
+            _frequencyLabel.Text = $"{field:0.00000} MHz";
         }
     }
 
