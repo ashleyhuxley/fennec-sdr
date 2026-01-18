@@ -7,20 +7,7 @@ public class Label : UiElement
 {
     private Size _size;
 
-    public string Text
-    {
-        get;
-        set
-        {
-            if (field == value)
-            {
-                return;
-            }
-
-            field = value;
-            Invalidate();
-        }
-    }
+    private string _text = string.Empty;
 
     public Color Color { get; set; }
     public string Font { get; set; }
@@ -29,7 +16,7 @@ public class Label : UiElement
 
     public Label(string text, string font, int x, int y, Color color)
     {
-        Text = text;
+        _text = text;
         Font = font;
         Position = new Point(x, y);
         Color = color;
@@ -39,9 +26,9 @@ public class Label : UiElement
     {
         var bdfFont = resourceProvider.GetFont(Font);
         
-        var rect = bdfFont.MeasureString(Text);
+        var rect = bdfFont.MeasureString(_text);
         _size = new Size(rect.Width, rect.Height);
         
-        renderer.DrawText(Text, bdfFont, Position.X, Position.Y, Color);
+        renderer.DrawText(_text, bdfFont, AbsolutePosition.X, AbsolutePosition.Y, Color);
     }
 }
