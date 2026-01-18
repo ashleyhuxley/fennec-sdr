@@ -12,6 +12,11 @@ public class Label : UiElement
         get;
         set
         {
+            if (field == value)
+            {
+                return;
+            }
+
             field = value;
             Invalidate();
         }
