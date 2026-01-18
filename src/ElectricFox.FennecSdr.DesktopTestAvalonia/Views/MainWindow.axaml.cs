@@ -36,7 +36,7 @@ public partial class MainWindow : Window, ITouchController
         Display.Source = target.Bitmap;
         
         // Create app with logging
-        _app = new SdrApp(target, this, new Size(320, 240), loggerFactory);
+        _app = new SdrApp(target, this, new Size(320, 240), loggerFactory, new FakeRadioSource());
 
         Display.PointerPressed += (_, args) =>
         {

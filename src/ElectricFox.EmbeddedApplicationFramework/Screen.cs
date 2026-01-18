@@ -1,4 +1,5 @@
-﻿using ElectricFox.EmbeddedApplicationFramework.Ui;
+﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
+using ElectricFox.EmbeddedApplicationFramework.Ui;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework;
@@ -9,12 +10,28 @@ public abstract class Screen : UiContainer
 
     public Color BackgroundColor { get; set; } = Color.Black;
 
-    internal void Attach(AppHost app) => App = app;
+    internal void Attach(AppHost app)
+    {
+        App = app;
+        _size = app.ScreenSize;
+    }
 
     public virtual void OnEnter() { }
     public virtual void OnExit() { }
 
     public virtual void Update(TimeSpan delta) { }
+
+    private Size _size;
+
+    public override Size Size => _size;
+
+    protected abstract void OnInitialize();
+
+    protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
+    {
+        renderer.FillRect(0, 0, this.Size.Width, this.Size.Height, BackgroundColor);
+        base.OnRender(renderer, resourceProvider);
+    }
 }
 
 public abstract class Screen<TResult> : Screen
@@ -38,6 +55,4 @@ public abstract class Screen<TResult> : Screen
         _cts = new TaskCompletionSource<TResult>();
         OnInitialize();
     }
-
-    protected abstract void OnInitialize();
 }

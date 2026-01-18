@@ -1,5 +1,4 @@
-﻿using ElectricFox.BdfSharp;
-using ElectricFox.EmbeddedApplicationFramework.Graphics;
+﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;

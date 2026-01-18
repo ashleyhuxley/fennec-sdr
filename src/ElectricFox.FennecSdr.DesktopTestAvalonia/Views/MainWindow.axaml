@@ -9,7 +9,7 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="ElectricFox.FennecSdr.DesktopTestAvalonia"
         Loaded="Control_OnLoaded"
-		Width="400" Height="260">
+		Width="400" Height="260" Background="White">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -17,9 +17,12 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Image x:Name="Display"
-           Stretch="None"
-           HorizontalAlignment="Left"
-           VerticalAlignment="Top" />
+	<Grid>
+		<Image x:Name="Display"
+			   Stretch="None"
+			   HorizontalAlignment="Left"
+			   VerticalAlignment="Top" Width="320" Height="240" />
+
+	</Grid>
 
 </Window>

@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ElectricFox.EmbeddedApplicationFramework\ElectricFox.EmbeddedApplicationFramework.csproj" />
+    <ProjectReference Include="..\ElectricFox.FennecSdr.RtlSdrLib\ElectricFox.FennecSdr.RtlSdrLib.csproj" />
     <ProjectReference Include="..\ElectricFox.FennecSdr.Touch\ElectricFox.FennecSdr.Touch.csproj" />
   </ItemGroup>
 

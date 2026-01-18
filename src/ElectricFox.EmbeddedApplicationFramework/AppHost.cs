@@ -81,8 +81,6 @@ public sealed class AppHost
         }
         
         _current.OnEnter();
-        _renderer.Clear(_current.BackgroundColor);
-        _renderer.Flush();
     }
 
     private void Update(TimeSpan delta)

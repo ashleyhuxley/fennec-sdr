@@ -9,4 +9,5 @@ public interface IRadioSource
     public uint Frequency { get; set; }
     public int Gain { get; set; }
     public uint SampleRate { get; set; }
+    void Dispose();
 }

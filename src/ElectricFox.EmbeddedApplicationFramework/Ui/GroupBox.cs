@@ -75,8 +75,5 @@ public class GroupBox : UiContainer
 
             renderer.DrawText(Title, bdfFont, titleX, titleY, TextColor);
         }
-
-        // Render children with offset
-        base.OnRender(renderer, resourceProvider);
     }
 }

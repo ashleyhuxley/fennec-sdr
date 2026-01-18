@@ -3,6 +3,7 @@ using ElectricFox.EmbeddedApplicationFramework.Display;
 using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.EmbeddedApplicationFramework.Touch;
 using ElectricFox.FennecSdr.App.Screens;
+using ElectricFox.FennecSdr.RtlSdrLib;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 
@@ -12,6 +13,7 @@ public class SdrApp
 {
     private readonly AppHost _appHost;
     private readonly IResourceProvider _resourceProvider;
+    private readonly IRadioSource _radioSource;
     private readonly CancellationTokenSource _cts = new();
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<SdrApp> _logger;
@@ -20,16 +22,20 @@ public class SdrApp
         IScanlineTarget target, 
         ITouchController touchController,
         Size size,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        IRadioSource radioSource)
     {
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<SdrApp>();
         
-        var renderer = new GraphicsRenderer(target);
+        var renderer = new GraphicsRenderer(target, _loggerFactory.CreateLogger<GraphicsRenderer>());
         _resourceProvider = new ResourceManager();
         
         var appHostLogger = loggerFactory.CreateLogger<AppHost>();
         _appHost = new AppHost(renderer, touchController, size, _resourceProvider, appHostLogger);
+
+        // Create radio source once
+        _radioSource = radioSource;
         
         _logger.LogInformation("SdrApp created");
     }
@@ -56,16 +62,17 @@ public class SdrApp
                     var pmrChannel = await screenManager.ShowAsync(new PmrChannelSelectScreen());
                     if (pmrChannel.HasValue)
                     {
-                        var ctcssScreen = new CtcssScreen
+                        var ctcssScreen = new CtcssScreen(_radioSource) // Pass shared instance
                         {
-                            Frequency = Constants.PmrChannelFrequencies[pmrChannel.Value - 1]
+                            Frequency = Constants.PmrChannelFrequencies[pmrChannel.Value]
                         };
                         await screenManager.ShowAsync(ctcssScreen);
                     }
                     break;
                     
                 case MainMenuItem.Waterfall:
-                    _logger.LogInformation("Waterfall not yet implemented");
+                    var waterfallScreen = new WaterfallScreen(_radioSource); // Same instance
+                    await screenManager.ShowAsync(waterfallScreen);
                     break;
             }
         }
@@ -73,9 +80,13 @@ public class SdrApp
         _logger.LogInformation("Application stopping");
     }
     
-    public void Stop()
+    public async Task StopAsync()
     {
         _logger.LogInformation("Stop requested");
         _cts.Cancel();
+        
+        // Clean up radio source
+        await _radioSource.StopAsync();
+        _radioSource.Dispose();
     }
 }

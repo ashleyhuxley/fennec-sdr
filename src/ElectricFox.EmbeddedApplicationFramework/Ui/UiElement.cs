@@ -46,32 +46,27 @@ public abstract class UiElement
 
     public void Render(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        if (!RequiresRedraw)
+        if (RequiresRedraw)
         {
-            return;
+            OnRender(renderer, resourceProvider);
+            RequiresRedraw = false;
         }
-        
-        OnRender(renderer, resourceProvider);
-        RequiresRedraw = false;
+
+        OnRendered(renderer, resourceProvider);
     }
 
     protected virtual void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
     }
-    
+
+    protected virtual void OnRendered(GraphicsRenderer renderer, IResourceProvider resourceProvider)
+    {
+    }
+
     public virtual bool OnTouch(TouchEvent e) => false;
 
     protected void Invalidate()
     {
         RequiresRedraw = true;
-        Invalidated?.Invoke(Bounds);
-        Parent?.OnChildInvalidated(Bounds);
-    }
-
-    protected virtual void OnChildInvalidated(Rectangle rect)
-    {
-        RequiresRedraw = true;
-        Invalidated?.Invoke(rect);
-        Parent?.OnChildInvalidated(rect);
     }
 }

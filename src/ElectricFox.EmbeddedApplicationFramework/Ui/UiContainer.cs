@@ -7,7 +7,6 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public class UiContainer : UiElement
 {
-    private Rectangle? _dirty;
     private ILogger? _logger;
 
     private List<UiElement> Children { get; } = [];
@@ -22,22 +21,13 @@ public class UiContainer : UiElement
     /// </summary>
     public override Point ChildOffset => new(Padding, Padding);
 
-    public UiContainer()
-    {
-        // Subscribe to our own Invalidated event to track dirty rectangles
-        Invalidated += OnInvalidated;
-    }
-
     protected void SetLogger(ILogger logger) => _logger = logger;
 
     public void AddChild(UiElement child)
     {
         child.Parent = this;
-        child.Invalidated += OnInvalidated;
         Children.Add(child);
         
-        // Call the base Invalidate() instead of OnInvalidated directly
-        // This ensures RequiresRedraw gets set
         Invalidate();
     }
     
@@ -50,30 +40,25 @@ public class UiContainer : UiElement
 
             foreach (var child in Children)
             {
-                // Calculate size based on child's relative position + size + padding
                 var childRight = child.Position.X + child.Size.Width;
                 var childBottom = child.Position.Y + child.Size.Height;
                 width = Math.Max(width, childRight);
                 height = Math.Max(height, childBottom);
             }
 
-            // Add padding to both sides
             return new Size(width + Padding * 2, height + Padding * 2);
         }
     }
 
-    protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
+    protected override void OnRendered(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        if (!Visible || _dirty == null)
+        if (!Visible)
         {
             return;
         }
 
-        _logger?.LogTrace("UiContainer rendering dirty rect: {DirtyRect}", _dirty);
+        _logger?.LogTrace("UiContainer children rendering");
         
-        // Clear dirty rect after we've decided to render
-        _dirty = null;
-
         foreach (var child in Children)
         {
             child.Render(renderer, resourceProvider);
@@ -86,16 +71,11 @@ public class UiContainer : UiElement
         {
             if (Children[i].Bounds.Contains(new Point(e.Point.X, e.Point.Y)) &&
                 Children[i].OnTouch(e))
+            {
                 return true;
+            }
         }
 
         return false;
-    }
-
-    private void OnInvalidated(Rectangle rect)
-    {
-        _dirty = _dirty == null
-            ? rect
-            : Rectangle.Union(_dirty.Value, rect);
     }
 }

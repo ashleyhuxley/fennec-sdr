@@ -53,7 +53,7 @@ public class Ctcss
         233.6,
         241.8,
         250.3,
-        254.1
+        254.1,
     ];
 
     public static void DisplayHistogram(Dictionary<double, double> ctcssTones)
@@ -96,10 +96,14 @@ public class Ctcss
     {
         double totalEnergy = 0;
         foreach (short s in samples)
+        {
             totalEnergy += (double)s * s;
+        }
 
         if (totalEnergy < minEnergy)
+        {
             return null;
+        }
 
         double maxPower = 0;
         double secondPower = 0;
@@ -122,11 +126,15 @@ public class Ctcss
         }
 
         if (maxPower < secondPower * dominanceRatio)
+        {
             return null;
+        }
 
         double confidence = maxPower / totalEnergy;
         if (confidence < minConfidence)
+        {
             return null;
+        }
 
         return bestMatch;
     }
@@ -139,6 +147,7 @@ public class Ctcss
 
         double s1 = 0,
             s2 = 0;
+
         foreach (short sample in samples)
         {
             double s0 = sample + coeff * s1 - s2;

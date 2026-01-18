@@ -1,5 +1,6 @@
 ﻿using ElectricFox.BdfSharp;
 using ElectricFox.EmbeddedApplicationFramework.Display;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Drawing;
@@ -13,17 +14,21 @@ public class GraphicsRenderer
 {
     private readonly Image<Rgba32> _image;
     private readonly IScanlineTarget _target;
+    private readonly ILogger<GraphicsRenderer> _logger;
     private Rectangle? _dirty;
 
 
-    public GraphicsRenderer(IScanlineTarget target)
+    public GraphicsRenderer(IScanlineTarget target, ILogger<GraphicsRenderer> logger)
     {
         _target = target;
+        _logger = logger;
         _image = new Image<Rgba32>(_target.Width, _target.Height);
     }
 
     public void Clear(Color color)
     {
+        _logger.LogDebug("Clearing graphics buffer with color {Color}", color);
+
         _image.Mutate(ctx => ctx.Clear(color));
 
         MarkDirty(new Rectangle(0, 0, _target.Width, _target.Height));
@@ -137,6 +142,8 @@ public class GraphicsRenderer
         {
             return;
         }
+
+        _logger.LogDebug("Flushing graphics buffer to target, dirty region: {Region}", _dirty.Value);
 
         if (_target is IPartialUpdateTarget partial)
         {
