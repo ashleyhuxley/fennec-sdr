@@ -9,7 +9,7 @@ public class UiContainer : UiElement
 {
     private ILogger? _logger;
 
-    private List<UiElement> Children { get; } = [];
+    internal List<UiElement> Children { get; } = [];
     
     /// <summary>
     /// Padding applied to child controls

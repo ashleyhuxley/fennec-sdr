@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using ElectricFox.EmbeddedApplicationFramework.Ui;
+using Microsoft.Extensions.Logging;
 
 namespace ElectricFox.EmbeddedApplicationFramework;
 
@@ -35,8 +36,28 @@ public sealed class ScreenManager
 
         var screen = _stack.Pop();
         _logger.LogDebug("Popped screen {ScreenType}, stack depth now {Depth}", screen.GetType().Name, _stack.Count);
-        Current?.Invalidate();
+        InvalidateTree(Current);
         _host.SetScreen(Current);
+    }
+
+    private void InvalidateTree(UiElement? element)
+    {
+        if (element is null)
+        {
+            return;
+        }
+        
+        element.Invalidate();
+        
+        if (element is not UiContainer container)
+        {
+            return;
+        }
+        
+        foreach (var child in container.Children)
+        {
+            InvalidateTree(child);
+        }
     }
 
     public async Task<TResult> ShowAsync<TResult>(Screen<TResult> screen)
