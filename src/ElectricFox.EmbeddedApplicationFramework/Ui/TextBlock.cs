@@ -21,7 +21,7 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui
         }
 
         public Color Color { get; set; }
-        public Color BackgroundColor { get; set; } = Color.Transparent;
+        public Color BackgroundColor { get; set; }
         public string Font { get; set; }
 
         public int Width { get; set; }
@@ -29,6 +29,9 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui
 
         public int PaddingTop { get; set; } = 3;
         public int PaddingLeft { get; set; } = 3;
+        
+        public HorizontalAlignment HorizontalAlignment { get; set; } = HorizontalAlignment.Left;
+        public VerticalAlignment VerticalAlignment { get; set; } = VerticalAlignment.Top;
 
         public override Size Size => new(Width, Height);
 
@@ -46,9 +49,27 @@ namespace ElectricFox.EmbeddedApplicationFramework.Ui
         protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
         {
             var bdfFont = resourceProvider.GetFont(Font);
+            
+            var textSize = bdfFont.MeasureString(Text);
+            
+            var x = HorizontalAlignment switch
+            {
+                HorizontalAlignment.Left => PaddingLeft,
+                HorizontalAlignment.Center => Size.Width / 2 - textSize.Width / 2,
+                HorizontalAlignment.Right => Size.Width - PaddingLeft - textSize.Width,
+                _ => 0
+            };
+
+            var y = VerticalAlignment switch
+            {
+                VerticalAlignment.Top => PaddingTop,
+                VerticalAlignment.Center => Size.Height / 2 - textSize.Height / 2,
+                VerticalAlignment.Bottom => Size.Height - PaddingTop - textSize.Height,
+                _ => 0
+            };
 
             renderer.FillRect(AbsolutePosition.X, AbsolutePosition.Y, Width, Height, BackgroundColor);
-            renderer.DrawText(Text, bdfFont, AbsolutePosition.X + PaddingLeft, AbsolutePosition.Y + PaddingTop, Color);
+            renderer.DrawText(Text, bdfFont, AbsolutePosition.X + x, AbsolutePosition.Y + y, Color);
         }
     }
 }

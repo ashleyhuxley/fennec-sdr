@@ -24,10 +24,7 @@ public class GroupBox : UiContainer
     // Padding for the content area (inside the border)
     public new int Padding { get; set; } = 5;
 
-    // Title height (extra offset for children)
-    private const int TitleHeight = 20;
-
-    public override Point ChildOffset => new(Padding, Padding + TitleHeight);
+    public override Point ChildOffset => new(Padding, Padding);
 
     public GroupBox(string title, string font)
     {
@@ -52,12 +49,16 @@ public class GroupBox : UiContainer
         var offsetY = string.IsNullOrEmpty(Title) ? 0 : (textSize.Height + 4) / 2;
 
         // Draw border
-        renderer.DrawRect(
-            absPos.X, 
-            absPos.Y + offsetY, 
-            size.Width, 
-            size.Height - offsetY, 
-            BorderColor);
+        if (BorderWidth > 0)
+        {
+            renderer.DrawRect(
+                absPos.X,
+                absPos.Y + offsetY,
+                size.Width,
+                size.Height - offsetY,
+                BorderColor,
+                BorderWidth);
+        }
 
         // Draw title
         if (!string.IsNullOrEmpty(Title))

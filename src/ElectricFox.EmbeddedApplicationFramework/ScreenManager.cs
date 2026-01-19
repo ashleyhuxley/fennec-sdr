@@ -35,7 +35,7 @@ public sealed class ScreenManager
 
         var screen = _stack.Pop();
         _logger.LogDebug("Popped screen {ScreenType}, stack depth now {Depth}", screen.GetType().Name, _stack.Count);
-
+        Current?.Invalidate();
         _host.SetScreen(Current);
     }
 
@@ -62,13 +62,5 @@ public sealed class ScreenManager
         {
             Pop();
         }
-    }
-
-    public void Replace(Screen screen)
-    {
-        _logger.LogInformation("Replacing all screens with {ScreenType}", screen.GetType().Name);
-        
-        _stack.Clear();
-        Push(screen);
     }
 }

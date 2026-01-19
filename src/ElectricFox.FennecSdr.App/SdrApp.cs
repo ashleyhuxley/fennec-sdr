@@ -62,7 +62,7 @@ public class SdrApp
                     var pmrChannel = await screenManager.ShowAsync(new PmrChannelSelectScreen());
                     if (pmrChannel.HasValue)
                     {
-                        var ctcssScreen = new CtcssScreen(_radioSource) // Pass shared instance
+                        var ctcssScreen = new CtcssScreen(_radioSource)
                         {
                             Frequency = Constants.PmrChannelFrequencies[pmrChannel.Value]
                         };
@@ -71,7 +71,9 @@ public class SdrApp
                     break;
                     
                 case MainMenuItem.Waterfall:
-                    var waterfallScreen = new WaterfallScreen(_radioSource); // Same instance
+                    await screenManager.ShowAsync(new FrequencySelectScreen(screenManager));
+                    
+                    var waterfallScreen = new WaterfallScreen(_radioSource);
                     await screenManager.ShowAsync(waterfallScreen);
                     break;
             }

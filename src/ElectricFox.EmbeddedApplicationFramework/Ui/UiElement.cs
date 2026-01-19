@@ -65,7 +65,7 @@ public abstract class UiElement
 
     public virtual bool OnTouch(TouchEvent e) => false;
 
-    protected void Invalidate()
+    public void Invalidate()
     {
         RequiresRedraw = true;
     }
