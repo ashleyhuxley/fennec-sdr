@@ -5,7 +5,7 @@ using SixLabors.ImageSharp;
 
 namespace ElectricFox.FennecSdr.App.Screens;
 
-public class FrequencySelectScreen : Screen<double>
+public class FrequencySelectScreen : Screen<double?>
 {
     private readonly ScreenManager _screenManager;
     
@@ -31,7 +31,9 @@ public class FrequencySelectScreen : Screen<double>
         {
             Position = new Point(15, 40),
             BorderWidth = 0,
-            Padding = 0
+            Padding = 0,
+            Width = 300,
+            Height = 120
         };
 
         for (var i = 0; i < 8; i++)
@@ -143,23 +145,49 @@ public class FrequencySelectScreen : Screen<double>
             return;
         }
         
-        var frequency = Constants.PmrChannelFrequencies[pmrChannel.Value];
+        var frequency = Constants.PmrChannelFrequencies[pmrChannel.Value - 1];
 
-        var i = 0;
-        foreach (var c in frequency.ToString(CultureInfo.InvariantCulture).Where(c => c != '.'))
+        var digits = ToFixedDigitArray(frequency);
+
+        for (var j = 0; j < 8; j++)
         {
-            _digits[i] = Convert.ToByte(c);
-            i++;
-            if (i == 8)
-            {
-                break;
-            }
+            _digits[j] = (byte)digits[j];
+            _digitTextBlocks[j].Text = $"{_digits[j]}";
         }
+    }
+    
+    public static int[] ToFixedDigitArray(double value)
+    {
+        // Clamp just in case
+        if (value < 0) value = 0;
+        if (value > 999.99999) value = 999.99999;
+
+        var digits = new int[8];
+
+        // Integer part (0–999)
+        int integerPart = (int)value;
+
+        // Fractional part scaled to 5 digits, truncated
+        int fractionalPart = (int)((value - integerPart) * 100000);
+
+        // Fill integer digits (positions 0–2)
+        digits[2] = integerPart % 10;
+        digits[1] = (integerPart / 10) % 10;
+        digits[0] = (integerPart / 100) % 10;
+
+        // Fill fractional digits (positions 3–7)
+        for (int i = 7; i >= 3; i--)
+        {
+            digits[i] = fractionalPart % 10;
+            fractionalPart /= 10;
+        }
+
+        return digits;
     }
 
     private void BackButtonClicked(Button button)
     {
-        
+        Complete(null);
     }
 
     private void SavedButtonClicked(Button button)

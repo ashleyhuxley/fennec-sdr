@@ -59,20 +59,20 @@ public class SdrApp
             switch (menuChoice)
             {
                 case MainMenuItem.CtcssToneFinder:
-                    var pmrChannel = await screenManager.ShowAsync(new PmrChannelSelectScreen());
-                    if (pmrChannel.HasValue)
+                    var ctcssFrequency = await screenManager.ShowAsync(new FrequencySelectScreen(screenManager));
+                    if (ctcssFrequency.HasValue)
                     {
                         var ctcssScreen = new CtcssScreen(_radioSource)
                         {
-                            Frequency = Constants.PmrChannelFrequencies[pmrChannel.Value]
+                            Frequency = ctcssFrequency.Value
                         };
                         await screenManager.ShowAsync(ctcssScreen);
                     }
+                    
                     break;
                     
                 case MainMenuItem.Waterfall:
-                    await screenManager.ShowAsync(new FrequencySelectScreen(screenManager));
-                    
+                    var waterfallFrequency = await screenManager.ShowAsync(new FrequencySelectScreen(screenManager));
                     var waterfallScreen = new WaterfallScreen(_radioSource);
                     await screenManager.ShowAsync(waterfallScreen);
                     break;
