@@ -18,6 +18,8 @@ public class CtcssScreen : Screen<bool>
     private readonly Button _closeButton;
     private readonly IRadioSource _radioSource;
 
+    private readonly BarChart _chart;
+
     private double? _lastTone;
 
     public double Frequency
@@ -57,6 +59,17 @@ public class CtcssScreen : Screen<bool>
         };
 
         _closeButton.Clicked += (_) => { Complete(true); };
+        
+        _chart = new BarChart(300, 100)
+        {
+            BarWidth = 3,
+            Width = Ctcss.CtcssTones.Length * 3,
+            Height = 90,
+            Position = new Point(0, 90),
+            BackgroundColor = Color.DarkGray,
+            BarColor = Color.Blue,
+            SecondaryBarColor = Color.DarkBlue
+        };
     }
 
     protected override void OnInitialize()
@@ -84,6 +97,7 @@ public class CtcssScreen : Screen<bool>
         groupBox.AddChild(_lastToneLabel);
         groupBox.AddChild(_lastToneText);
         groupBox.AddChild(_closeButton);
+        groupBox.AddChild(_chart);
         
         // Subscribe to samples
         _radioSource.SamplesAvailable += OnSamplesAvailable;
@@ -106,11 +120,14 @@ public class CtcssScreen : Screen<bool>
     
     private void OnSamplesAvailable(short[] samples)
     {
+        var data = Ctcss.GetToneValues(samples);
+        _chart.Data = data.Values.ToArray();
+        _chart.Invalidate();
+        
         var tone = Ctcss.DetectCTCSS(samples);
 
-        if  (samples[0] > 50)  // (tone.HasValue)
+        if  (tone.HasValue)
         {
-            tone = Convert.ToInt32(samples[0] / Ctcss.CtcssTones.Count());
             _toneText.Text = $"{tone.Value:0.00} Hz";
             _toneText.Color = Color.DarkGreen;
         }
@@ -120,10 +137,12 @@ public class CtcssScreen : Screen<bool>
             _toneText.Color = Color.DarkRed;
         }
 
-        if (tone is not null && tone != _lastTone)
+        if (tone is null || Equals(tone, _lastTone))
         {
-            _lastTone = tone;
-            _lastToneText.Text = $"{_lastTone.Value:0.00} Hz";
+            return;
         }
+        
+        _lastTone = tone;
+        _lastToneText.Text = $"{_lastTone.Value:0.00} Hz";
     }
 }

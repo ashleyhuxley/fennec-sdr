@@ -73,7 +73,7 @@ public class Ctcss
             Console.WriteLine($"{frequency, 8:F2} Hz: {new string('#', barLength)}");
         }
     }
-
+    
     public static Dictionary<double, double> GetToneValues(short[] samples)
     {
         var result = new Dictionary<double, double>();
@@ -89,8 +89,8 @@ public class Ctcss
 
     public static double? DetectCTCSS(
         short[] samples,
-        double minEnergy = 1e9,
-        double dominanceRatio = 6.0,
+        double minEnergy = 1e6,
+        double dominanceRatio = 1.000001,
         double minConfidence = 0.01
     )
     {
@@ -125,10 +125,10 @@ public class Ctcss
             }
         }
 
-        if (maxPower < secondPower * dominanceRatio)
-        {
-            return null;
-        }
+        //if (maxPower < secondPower * dominanceRatio)
+        //{
+        //    return null;
+        //}
 
         double confidence = maxPower / totalEnergy;
         if (confidence < minConfidence)
