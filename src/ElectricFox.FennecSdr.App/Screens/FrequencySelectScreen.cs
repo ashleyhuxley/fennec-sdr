@@ -77,7 +77,7 @@ public class FrequencySelectScreen : Screen<double?>
         // PMR button
         _pmrButton = new Button("PMR", ResourceManager.BdfFonts.Tamzen8x15b)
         {
-            BackgroundColor = Color.LightSeaGreen,
+            BackgroundColor = Color.LightSkyBlue,
             BorderColor = Color.DarkGray,
             Height = 60,
             Width = 60,
@@ -89,11 +89,11 @@ public class FrequencySelectScreen : Screen<double?>
         // Saved button
         _savedButton = new Button("Presets", ResourceManager.BdfFonts.Tamzen8x15b)
         {
-            BackgroundColor = Color.LightSeaGreen,
+            BackgroundColor = Color.LightSkyBlue,
             BorderColor = Color.DarkGray,
             Height = 60,
             Width = 60,
-            Position = new Point(85, 160),
+            Position = new Point(90, 160),
         };
             
         _savedButton.Clicked += SavedButtonClicked;
@@ -101,11 +101,11 @@ public class FrequencySelectScreen : Screen<double?>
         // Back button
         _backButton = new Button("<", ResourceManager.BdfFonts.Tamzen8x15b)
         {
-            BackgroundColor = Color.LightSeaGreen,
+            BackgroundColor = Color.PaleVioletRed,
             BorderColor = Color.DarkGray,
             Height = 60,
             Width = 60,
-            Position = new Point(155, 160),
+            Position = new Point(165, 160),
         };
             
         _backButton.Clicked += BackButtonClicked;
@@ -113,16 +113,16 @@ public class FrequencySelectScreen : Screen<double?>
         // OK Button
         _okButton = new Button("OK", ResourceManager.BdfFonts.Tamzen8x15b)
         {
-            BackgroundColor = Color.LightSeaGreen,
+            BackgroundColor = Color.LightCyan,
             BorderColor = Color.DarkGray,
             Height = 60,
             Width = 60,
-            Position = new Point(225, 160),
+            Position = new Point(240, 160),
         };
             
         _okButton.Clicked += OkButtonOnClicked;
 
-        _dotLabel = new Label(".", ResourceManager.BdfFonts.Tamzen8x15b, 105, 50, Color.White);
+        _dotLabel = new Label(".", ResourceManager.BdfFonts.Tamzen8x15b, 105, 45, Color.White);
     }
 
     private void OkButtonOnClicked(Button obj)
