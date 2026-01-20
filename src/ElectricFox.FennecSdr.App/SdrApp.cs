@@ -76,6 +76,11 @@ public class SdrApp
                     var waterfallScreen = new WaterfallScreen(_radioSource);
                     await screenManager.ShowAsync(waterfallScreen);
                     break;
+                
+                case MainMenuItem.PmrMonitor:
+                    break;
+                case MainMenuItem.SMeter:
+                    break;
             }
         }
         

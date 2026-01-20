@@ -18,7 +18,7 @@ public class CtcssScreen : Screen<bool>
     private readonly Button _closeButton;
     private readonly IRadioSource _radioSource;
 
-    private double? lastTone;
+    private double? _lastTone;
 
     public double Frequency
     {
@@ -71,7 +71,8 @@ public class CtcssScreen : Screen<bool>
             BackgroundColor = Color.Black,
             TextBackgroundColor = Color.Black,
             BorderWidth = 2,
-            Padding = 10
+            PaddingLeft = 10,
+            PaddingTop = 30,
         };
         
         AddChild(groupBox);
@@ -119,10 +120,10 @@ public class CtcssScreen : Screen<bool>
             _toneText.Color = Color.DarkRed;
         }
 
-        if (tone is not null && tone != lastTone)
+        if (tone is not null && tone != _lastTone)
         {
-            lastTone = tone;
-            _lastToneText.Text = $"{lastTone.Value:0.00} Hz";
+            _lastTone = tone;
+            _lastToneText.Text = $"{_lastTone.Value:0.00} Hz";
         }
     }
 }

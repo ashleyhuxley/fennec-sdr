@@ -22,9 +22,10 @@ public class GroupBox : UiContainer
     }
 
     // Padding for the content area (inside the border)
-    public new int Padding { get; set; } = 5;
+    public int PaddingTop { get; set; } = 10;
+    public int PaddingLeft { get; set; } = 5;
 
-    public override Point ChildOffset => new(Padding, Padding);
+    public override Point ChildOffset => new(PaddingLeft, PaddingTop);
 
     public GroupBox(string title, string font)
     {

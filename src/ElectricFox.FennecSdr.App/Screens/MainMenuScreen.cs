@@ -9,7 +9,7 @@ public enum MainMenuItem
     CtcssToneFinder,
     Waterfall,
     SMeter,
-    Exit
+    PmrMonitor
 }
 
 public class MainMenuScreen : Screen<MainMenuItem>
@@ -22,7 +22,8 @@ public class MainMenuScreen : Screen<MainMenuItem>
             BorderColor = Color.White,
             TextColor = Color.FromRgb(30, 0, 255),
             BorderWidth = 2,
-            Padding = 4,
+            PaddingLeft = 10,
+            PaddingTop = 20,
             Width = 300,
             Height = 210
         };
@@ -53,9 +54,9 @@ public class MainMenuScreen : Screen<MainMenuItem>
             Height = 60
         };
 
-        var exitButton = new Button("Exit", ResourceManager.BdfFonts.Tamzen8x15b)
+        var pmrButton = new Button("PMR Monitor", ResourceManager.BdfFonts.Tamzen8x15b)
         {
-            Tag = MainMenuItem.Exit,
+            Tag = MainMenuItem.PmrMonitor,
             Position = new Point(140, 80),
             Width = 120,
             Height = 60
@@ -64,12 +65,12 @@ public class MainMenuScreen : Screen<MainMenuItem>
         ctcssButton.Clicked += Button_Clicked;
         waterfallButton.Clicked += Button_Clicked;
         sMeterButton.Clicked += Button_Clicked;
-        exitButton.Clicked += Button_Clicked;
+        pmrButton.Clicked += Button_Clicked;
 
         groupBox.AddChild(ctcssButton);
         groupBox.AddChild(waterfallButton);
         groupBox.AddChild(sMeterButton);
-        groupBox.AddChild(exitButton);
+        groupBox.AddChild(pmrButton);
     }
 
     public override void OnEnter()

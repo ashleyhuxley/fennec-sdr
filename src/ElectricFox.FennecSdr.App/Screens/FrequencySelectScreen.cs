@@ -31,7 +31,8 @@ public class FrequencySelectScreen : Screen<double?>
         {
             Position = new Point(15, 40),
             BorderWidth = 0,
-            Padding = 0,
+            PaddingTop = 0,
+            PaddingLeft = 0,
             Width = 300,
             Height = 120
         };
