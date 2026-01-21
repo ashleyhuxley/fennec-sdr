@@ -12,14 +12,9 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var touchCal = new TouchCalibration(369, 3538, 332, 3900, true, true, false);
-        var spiLock = new object();
-
-        var lcd = new Ili9341(0, 0, spiLock);
-        var touch = new Xpt2046(spiBusId: 0, csPin: 1, irqPin: 17, touchCal, spiLock);
+        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+        Console.WriteLine("=== APPLICATION START v1 ===");
         
-        var target = new LcdScanlineTarget(lcd, 320, 240);
-
         var services = new ServiceCollection();
         services.AddLogging(builder =>
         {
@@ -31,7 +26,17 @@ public class Program
         var serviceProvider = services.BuildServiceProvider();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         
-       
+        var touchCal = new TouchCalibration(369, 3538, 332, 3900, true, true, false);
+        var spiLock = new object();
+
+        var lcd = new Ili9341(0, 0, spiLock);
+        var touch = new Xpt2046(spiBusId: 0, csPin: 1, irqPin: 17, touchCal, spiLock, loggerFactory.CreateLogger<Xpt2046>());
+        
+        loggerFactory.CreateLogger<Program>().LogInformation("Starting...");
+        touch.Start();
+        
+        var target = new LcdScanlineTarget(lcd, 320, 240);
+
         // Create app with logging
         var app = new SdrApp(target, touch, new Size(320, 240), loggerFactory, new RtlSdrRadioSource());
 

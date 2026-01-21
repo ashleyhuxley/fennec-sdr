@@ -1,12 +1,15 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Touch;
 using System.Device.Gpio;
 using System.Device.Spi;
+using Microsoft.Extensions.Logging;
 
 namespace ElectricFox.FennecSdr.Touch;
 
 public class Xpt2046 : IDisposable, ITouchController
 {
     public event Action<TouchEvent>? TouchEventReceived;
+    
+    private readonly ILogger<Xpt2046> _logger;
 
     private readonly SpiDevice _spi;
     private readonly GpioController _gpio;
@@ -27,9 +30,11 @@ public class Xpt2046 : IDisposable, ITouchController
         int csPin,
         int irqPin,
         TouchCalibration touchCalibration,
-        object spiLock
+        object spiLock,
+        ILogger<Xpt2046> logger
     )
     {
+        _logger = logger;
         _touchCalibration = touchCalibration;
 
         var settings = new SpiConnectionSettings(spiBusId, csPin)
@@ -48,6 +53,8 @@ public class Xpt2046 : IDisposable, ITouchController
 
     public void Start()
     {
+        _logger.LogInformation("Starting touch controller");
+        
         _gpio.OpenPin(_irqPinNumber, PinMode.InputPullUp);
         _gpio.RegisterCallbackForPinValueChangedEvent(
             _irqPinNumber,
@@ -144,7 +151,7 @@ public class Xpt2046 : IDisposable, ITouchController
     {
         var point = Calibrate(rawX, rawY);
 
-        Console.WriteLine($"Calibrated to X={point.X} Y={point.Y}, P={pressure}");
+        _logger.LogDebug("Calibrated to X={PointX} Y={PointY}, P={Pressure}", point.X, point.Y, pressure);
 
         TouchEventReceived?.Invoke(new TouchEvent(point));
     }
