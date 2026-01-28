@@ -1,11 +1,11 @@
 using System;
-using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ElectricFox.EmbeddedApplicationFramework.Display;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace ElectricFox.FennecSdr.DesktopTestAvalonia;
 
@@ -17,7 +17,7 @@ public sealed class AvaloniaScanlineTarget : IScanlineTarget
     public int Width { get; }
     public int Height { get; }
 
-    private Image _image;
+    private readonly Image _image;
 
     public AvaloniaScanlineTarget(int width, int height, Image image)
     {
@@ -39,26 +39,27 @@ public sealed class AvaloniaScanlineTarget : IScanlineTarget
         _lockHandle = _bitmap.Lock();
     }
 
-    public unsafe void WriteScanline(int y, ReadOnlySpan<byte> rgb565)
+    public unsafe void WriteScanline(int y, ReadOnlySpan<Rgba32> data)
     {
-        using var fb = _bitmap.Lock();
+        if (_lockHandle == null)
+        {
+            throw new InvalidOperationException("BeginFrame must be called before WriteScanline");
+        }
+
+        var fb = _lockHandle as ILockedFramebuffer
+            ?? throw new InvalidOperationException("Invalid framebuffer lock");
 
         byte* dst = (byte*)fb.Address + y * fb.RowBytes;
 
-        for (int x = 0; x < Width; x++)
+        for (int x = 0; x < Width && x < data.Length; x++)
         {
-            int i = x * 2;
-            ushort rgb = (ushort)((rgb565[i] << 8) | rgb565[i + 1]);
+            var pixel = data[x];
 
-            byte r = (byte)((rgb >> 8) & 0xF8);
-            byte g = (byte)((rgb >> 3) & 0xFC);
-            byte b = (byte)((rgb << 3) & 0xF8);
-
-            int o = x * 4;
-            dst[o + 0] = b;
-            dst[o + 1] = g;
-            dst[o + 2] = r;
-            dst[o + 3] = 255;
+            int offset = x * 4;
+            dst[offset + 0] = pixel.B; // Blue
+            dst[offset + 1] = pixel.G; // Green
+            dst[offset + 2] = pixel.R; // Red
+            dst[offset + 3] = 255;//pixel.A; // Alpha (or 255 for opaque)
         }
     }
 

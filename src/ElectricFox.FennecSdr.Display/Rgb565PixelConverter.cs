@@ -1,6 +1,6 @@
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace ElectricFox.EmbeddedApplicationFramework.Graphics;
+namespace ElectricFox.FennecSdr.Display;
 
 public class Rgb565PixelConverter : IPixelConverter
 {

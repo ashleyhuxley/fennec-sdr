@@ -20,7 +20,6 @@ public class SdrApp
 
     public SdrApp(
         IScanlineTarget target,
-        IPixelConverter pixelConverter,
         ITouchController touchController,
         Size size,
         ILoggerFactory loggerFactory,
@@ -29,7 +28,7 @@ public class SdrApp
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<SdrApp>();
         
-        var renderer = new GraphicsRenderer(target, pixelConverter, _loggerFactory.CreateLogger<GraphicsRenderer>());
+        var renderer = new GraphicsRenderer(target, _loggerFactory.CreateLogger<GraphicsRenderer>());
         _resourceProvider = new ResourceManager();
         
         var appHostLogger = loggerFactory.CreateLogger<AppHost>();

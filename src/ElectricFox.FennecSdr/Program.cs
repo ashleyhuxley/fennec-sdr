@@ -37,10 +37,9 @@ public class Program
         touch.Start();
         
         var target = new LcdScanlineTarget(lcd);
-        var pixelConverter = new Rgb565PixelConverter();
 
         // Create app with logging
-        var app = new SdrApp(target, pixelConverter, touch, new Size(320, 240), loggerFactory, new RtlSdrRadioSource());
+        var app = new SdrApp(target, touch, new Size(320, 240), loggerFactory, new RtlSdrRadioSource());
 
         await Task.Run(() => app.StartAsync());
     }

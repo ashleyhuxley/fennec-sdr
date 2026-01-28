@@ -1,5 +1,6 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Display;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace ElectricFox.FennecSdr.Display;
 
@@ -21,9 +22,24 @@ public sealed class LcdScanlineTarget : IScanlineTarget, IPartialUpdateTarget
         _lcd.BeginWrite();
     }
 
-    public void WriteScanline(int y, ReadOnlySpan<byte> rgb565)
+    public void WriteScanline(int y, ReadOnlySpan<Rgba32> data)
     {
-        _lcd.WriteScanline(rgb565);
+        // Convert Rgba32 data to LCD's pixel format
+        int bytesPerPixel = _lcd.PixelConverter.BytesPerPixel;
+        Span<byte> buffer = stackalloc byte[data.Length * bytesPerPixel];
+
+        for (int i = 0; i < data.Length; i++)
+        {
+            int offset = i * bytesPerPixel;
+            _lcd.PixelConverter.ConvertPixel(data[i], buffer.Slice(offset, bytesPerPixel));
+        }
+
+        _lcd.WriteScanline(buffer);
+    }
+
+    public void EndFrame()
+    {
+        // No-op for most LCD devices
     }
 
     public void BeginRegion(Rectangle region)
@@ -35,5 +51,10 @@ public sealed class LcdScanlineTarget : IScanlineTarget, IPartialUpdateTarget
             region.Height);
 
         _lcd.BeginWrite();
+    }
+
+    public void EndRegion()
+    {
+        // No-op for most LCD devices
     }
 }

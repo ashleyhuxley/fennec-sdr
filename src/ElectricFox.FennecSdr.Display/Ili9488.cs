@@ -1,5 +1,6 @@
 using System.Device.Gpio;
 using System.Device.Spi;
+using ElectricFox.EmbeddedApplicationFramework.Display;
 
 namespace ElectricFox.FennecSdr.Display;
 
@@ -14,10 +15,12 @@ public class Ili9488 : ILcdDevice
     private readonly SpiDevice _spi;
     private readonly GpioController _gpio;
     private readonly object _spiLock;
+    private readonly IPixelConverter _pixelConverter;
     private readonly bool _useRgb565;
 
     public int Width => 320;
     public int Height => 480;
+    public IPixelConverter PixelConverter => _pixelConverter;
 
     /// <summary>
     /// Creates a new ILI9488 driver
@@ -41,6 +44,11 @@ public class Ili9488 : ILcdDevice
         _spi = SpiDevice.Create(settings);
         _spiLock = spiLock;
         _useRgb565 = useRgb565;
+        
+        // Device provides its own converter based on configuration
+        _pixelConverter = useRgb565 
+            ? new Rgb565PixelConverter() 
+            : new Rgb666PixelConverter();
     }
     
     public void BeginWrite()

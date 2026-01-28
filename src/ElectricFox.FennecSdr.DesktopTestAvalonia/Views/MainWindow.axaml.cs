@@ -34,11 +34,10 @@ public partial class MainWindow : Window, ITouchController
         
         // Set up rendering target and tie it to the image
         var target = new AvaloniaScanlineTarget(320, 240, Display);
-        var pixelConverter = new Rgb565PixelConverter();
         Display.Source = target.Bitmap;
         
         // Create app with logging
-        _app = new SdrApp(target, pixelConverter, this, new Size(320, 240), loggerFactory, new FakeRadioSource());
+        _app = new SdrApp(target, this, new Size(320, 240), loggerFactory, new FakeRadioSource());
 
         Display.PointerPressed += (_, args) =>
         {

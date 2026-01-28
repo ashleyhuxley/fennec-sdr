@@ -10,12 +10,12 @@ public class Ili9341 : ILcdDevice
 
     private readonly SpiDevice _spi;
     private readonly GpioController _gpio;
-
     private readonly object _spiLock;
+    private readonly IPixelConverter _pixelConverter = new Rgb565PixelConverter();
 
     public int Width => 320;
-
     public int Height => 240;
+    public IPixelConverter PixelConverter => _pixelConverter;
 
     public Ili9341(int spiBusId, int csPin, object spiLock)
     {
@@ -43,11 +43,11 @@ public class Ili9341 : ILcdDevice
         }
     }
 
-    public void WriteScanline(ReadOnlySpan<byte> rgb565Line)
+    public void WriteScanline(ReadOnlySpan<byte> data)
     {
         lock (_spiLock)
         {
-            _spi.Write(rgb565Line);
+            _spi.Write(data);
         }
     }
 

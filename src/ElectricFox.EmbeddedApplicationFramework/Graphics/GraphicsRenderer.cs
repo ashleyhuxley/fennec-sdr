@@ -14,14 +14,12 @@ public class GraphicsRenderer
 {
     private readonly Image<Rgba32> _image;
     private readonly IScanlineTarget _target;
-    private readonly IPixelConverter _pixelConverter;
     private readonly ILogger<GraphicsRenderer> _logger;
     private Rectangle? _dirty;
 
-    public GraphicsRenderer(IScanlineTarget target, IPixelConverter pixelConverter, ILogger<GraphicsRenderer> logger)
+    public GraphicsRenderer(IScanlineTarget target, ILogger<GraphicsRenderer> logger)
     {
         _target = target;
-        _pixelConverter = pixelConverter;
         _logger = logger;
         _image = new Image<Rgba32>(_target.Width, _target.Height);
     }
@@ -162,46 +160,26 @@ public class GraphicsRenderer
     {
         target.BeginRegion(r);
 
-        // Allocate buffer based on pixel converter's bytes per pixel
-        int bytesPerLine = r.Width * _pixelConverter.BytesPerPixel;
-        Span<byte> line = stackalloc byte[bytesPerLine];
-
         for (int y = r.Top; y < r.Bottom; y++)
         {
             var row = _image.DangerousGetPixelRowMemory(y).Span;
-
-            for (int x = r.Left; x < r.Right; x++)
-            {
-                var pixel = row[x];
-                int offset = (x - r.Left) * _pixelConverter.BytesPerPixel;
-                _pixelConverter.ConvertPixel(pixel, line.Slice(offset, _pixelConverter.BytesPerPixel));
-            }
-
-            target.WriteScanline(y, line);
+            target.WriteScanline(y, row[r.Left..r.Right]);
         }
+
+        target.EndRegion();
     }
 
     private void FlushFull()
     {
         _target.BeginFrame();
 
-        // Allocate buffer based on pixel converter's bytes per pixel
-        int bytesPerLine = _target.Width * _pixelConverter.BytesPerPixel;
-        Span<byte> line = stackalloc byte[bytesPerLine];
-
         for (int y = 0; y < _target.Height; y++)
         {
             Span<Rgba32> row = _image.DangerousGetPixelRowMemory(y).Span;
-
-            for (int x = 0; x < _target.Width; x++)
-            {
-                Rgba32 pixel = row[x];
-                int offset = x * _pixelConverter.BytesPerPixel;
-                _pixelConverter.ConvertPixel(pixel, line.Slice(offset, _pixelConverter.BytesPerPixel));
-            }
-
-            _target.WriteScanline(y, line);
+            _target.WriteScanline(y, row);
         }
+
+        _target.EndFrame();
     }
 
     private void MarkDirty(Rectangle r)

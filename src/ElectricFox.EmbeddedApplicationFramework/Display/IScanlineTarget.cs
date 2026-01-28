@@ -1,10 +1,13 @@
-﻿namespace ElectricFox.EmbeddedApplicationFramework.Display;
+﻿using SixLabors.ImageSharp.PixelFormats;
+
+namespace ElectricFox.EmbeddedApplicationFramework.Display;
 
 public interface IScanlineTarget
 {
     int Width { get; }
     int Height { get; }
-
+    
     void BeginFrame();
-    void WriteScanline(int y, ReadOnlySpan<byte> rgb565);
+    void WriteScanline(int y, ReadOnlySpan<Rgba32> data);
+    void EndFrame();
 }
