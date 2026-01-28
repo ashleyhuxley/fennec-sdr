@@ -7,5 +7,4 @@ public interface IScanlineTarget
 
     void BeginFrame();
     void WriteScanline(int y, ReadOnlySpan<byte> rgb565);
-    void EndFrame();
 }

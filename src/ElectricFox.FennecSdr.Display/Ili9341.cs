@@ -3,7 +3,7 @@ using System.Device.Spi;
 
 namespace ElectricFox.FennecSdr.Display;
 
-public class Ili9341
+public class Ili9341 : ILcdDevice
 {
     private const int DcPin = 25;
     private const int ResetPin = 24;
@@ -12,6 +12,10 @@ public class Ili9341
     private readonly GpioController _gpio;
 
     private readonly object _spiLock;
+
+    public int Width => 320;
+
+    public int Height => 240;
 
     public Ili9341(int spiBusId, int csPin, object spiLock)
     {

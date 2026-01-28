@@ -5,16 +5,14 @@ namespace ElectricFox.FennecSdr.Display;
 
 public sealed class LcdScanlineTarget : IScanlineTarget, IPartialUpdateTarget
 {
-    private readonly Ili9341 _lcd;
+    private readonly ILcdDevice _lcd;
 
-    public int Width { get; }
-    public int Height { get; }
+    public int Width => _lcd.Width;
+    public int Height => _lcd.Height;
 
-    public LcdScanlineTarget(Ili9341 lcd, int width, int height)
+    public LcdScanlineTarget(ILcdDevice lcd)
     {
         _lcd = lcd;
-        Width = width;
-        Height = height;
     }
 
     public void BeginFrame()
@@ -28,11 +26,6 @@ public sealed class LcdScanlineTarget : IScanlineTarget, IPartialUpdateTarget
         _lcd.WriteScanline(rgb565);
     }
 
-    public void EndFrame()
-    {
-        // Method intentionally left empty. LCD does not need EndFrame.
-    }
-
     public void BeginRegion(Rectangle region)
     {
         _lcd.SetAddressWindow(
@@ -42,10 +35,5 @@ public sealed class LcdScanlineTarget : IScanlineTarget, IPartialUpdateTarget
             region.Height);
 
         _lcd.BeginWrite();
-    }
-
-    public void EndRegion()
-    {
-        // Not required for this display.
     }
 }

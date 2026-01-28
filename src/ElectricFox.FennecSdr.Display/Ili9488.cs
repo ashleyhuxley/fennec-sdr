@@ -6,7 +6,7 @@ namespace ElectricFox.FennecSdr.Display;
 /// <summary>
 /// ILI9488 TFT LCD driver (320x480, RGB666/RGB565)
 /// </summary>
-public class Ili9488
+public class Ili9488 : ILcdDevice
 {
     private const int DcPin = 25;
     private const int ResetPin = 24;
@@ -15,6 +15,9 @@ public class Ili9488
     private readonly GpioController _gpio;
     private readonly object _spiLock;
     private readonly bool _useRgb565;
+
+    public int Width => 320;
+    public int Height => 480;
 
     /// <summary>
     /// Creates a new ILI9488 driver

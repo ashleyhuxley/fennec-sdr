@@ -14,13 +14,14 @@ public class GraphicsRenderer
 {
     private readonly Image<Rgba32> _image;
     private readonly IScanlineTarget _target;
+    private readonly IPixelConverter _pixelConverter;
     private readonly ILogger<GraphicsRenderer> _logger;
     private Rectangle? _dirty;
 
-
-    public GraphicsRenderer(IScanlineTarget target, ILogger<GraphicsRenderer> logger)
+    public GraphicsRenderer(IScanlineTarget target, IPixelConverter pixelConverter, ILogger<GraphicsRenderer> logger)
     {
         _target = target;
+        _pixelConverter = pixelConverter;
         _logger = logger;
         _image = new Image<Rgba32>(_target.Width, _target.Height);
     }
@@ -161,7 +162,9 @@ public class GraphicsRenderer
     {
         target.BeginRegion(r);
 
-        Span<byte> line = stackalloc byte[r.Width * 2];
+        // Allocate buffer based on pixel converter's bytes per pixel
+        int bytesPerLine = r.Width * _pixelConverter.BytesPerPixel;
+        Span<byte> line = stackalloc byte[bytesPerLine];
 
         for (int y = r.Top; y < r.Bottom; y++)
         {
@@ -169,54 +172,36 @@ public class GraphicsRenderer
 
             for (int x = r.Left; x < r.Right; x++)
             {
-                var p = row[x];
-                ushort rgb565 = ToRgb565(p);
-
-                int i = (x - r.Left) * 2;
-                line[i] = (byte)(rgb565 >> 8);
-                line[i + 1] = (byte)rgb565;
+                var pixel = row[x];
+                int offset = (x - r.Left) * _pixelConverter.BytesPerPixel;
+                _pixelConverter.ConvertPixel(pixel, line.Slice(offset, _pixelConverter.BytesPerPixel));
             }
 
             target.WriteScanline(y, line);
         }
-
-        target.EndRegion();
     }
-
 
     private void FlushFull()
     {
         _target.BeginFrame();
 
-        Span<byte> line = stackalloc byte[_target.Width * 2];
+        // Allocate buffer based on pixel converter's bytes per pixel
+        int bytesPerLine = _target.Width * _pixelConverter.BytesPerPixel;
+        Span<byte> line = stackalloc byte[bytesPerLine];
 
         for (int y = 0; y < _target.Height; y++)
         {
-            // Correct ImageSharp 3.x API
             Span<Rgba32> row = _image.DangerousGetPixelRowMemory(y).Span;
 
             for (int x = 0; x < _target.Width; x++)
             {
-                Rgba32 p = row[x];
-
-                ushort rgb565 = ToRgb565(p);
-
-                int i = x * 2;
-                line[i] = (byte)(rgb565 >> 8);
-                line[i + 1] = (byte)(rgb565 & 0xFF);
+                Rgba32 pixel = row[x];
+                int offset = x * _pixelConverter.BytesPerPixel;
+                _pixelConverter.ConvertPixel(pixel, line.Slice(offset, _pixelConverter.BytesPerPixel));
             }
 
             _target.WriteScanline(y, line);
         }
-
-        _target.EndFrame();
-    }
-
-    private static ushort ToRgb565(Rgba32 p)
-    {
-        return (ushort)(((p.R & 0xF8) << 8) |
-                        ((p.G & 0xFC) << 3) |
-                        (p.B >> 3));
     }
 
     private void MarkDirty(Rectangle r)
