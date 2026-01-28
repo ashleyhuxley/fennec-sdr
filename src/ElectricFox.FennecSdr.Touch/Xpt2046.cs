@@ -1,11 +1,15 @@
-﻿using System.Device.Gpio;
+﻿using ElectricFox.EmbeddedApplicationFramework.Touch;
+using System.Device.Gpio;
 using System.Device.Spi;
+using Microsoft.Extensions.Logging;
 
 namespace ElectricFox.FennecSdr.Touch;
 
 public class Xpt2046 : IDisposable, ITouchController
 {
     public event Action<TouchEvent>? TouchEventReceived;
+    
+    private readonly ILogger<Xpt2046> _logger;
 
     private readonly SpiDevice _spi;
     private readonly GpioController _gpio;
@@ -18,26 +22,19 @@ public class Xpt2046 : IDisposable, ITouchController
     private Task? _workerTask;
     private readonly CancellationTokenSource _cts = new();
 
-    private bool _isTouching = false;
-    private TouchPoint _lastPoint;
-    private TouchPoint _stablePoint;
-    private int _stableCount = 0;
-    private DateTime _lastTouchTime;
-    private bool disposedValue;
-
-    // Thresholds for debounce and movement
-    private const int MoveThresholdPx = 4;
-    private const int StableCountRequired = 3;
-    private const int ReleaseTimeoutMs = 50;
+    private bool _disposedValue;
+    private bool _spiActive;
 
     public Xpt2046(
         int spiBusId,
         int csPin,
         int irqPin,
         TouchCalibration touchCalibration,
-        object spiLock
+        object spiLock,
+        ILogger<Xpt2046> logger
     )
     {
+        _logger = logger;
         _touchCalibration = touchCalibration;
 
         var settings = new SpiConnectionSettings(spiBusId, csPin)
@@ -56,6 +53,8 @@ public class Xpt2046 : IDisposable, ITouchController
 
     public void Start()
     {
+        _logger.LogInformation("Starting touch controller");
+        
         _gpio.OpenPin(_irqPinNumber, PinMode.InputPullUp);
         _gpio.RegisterCallbackForPinValueChangedEvent(
             _irqPinNumber,
@@ -90,6 +89,11 @@ public class Xpt2046 : IDisposable, ITouchController
 
     private void IrqPinValueChanged(object sender, PinValueChangedEventArgs args)
     {
+        if (_spiActive)
+        {
+            return;
+        }
+
         Console.WriteLine("IRQ fired");
         _touchEventQueue.Release();
     }
@@ -98,124 +102,58 @@ public class Xpt2046 : IDisposable, ITouchController
     {
         rawX = rawY = pressure = 0;
 
-        int Read12Bit(byte command)
+        _spiActive = true;
+
+        try
         {
-            Span<byte> tx = stackalloc byte[3];
-            Span<byte> rx = stackalloc byte[3];
+            int Read12Bit(byte command)
+            {
+                Span<byte> tx = stackalloc byte[3];
+                Span<byte> rx = stackalloc byte[3];
 
-            tx[0] = command;
-            tx[1] = 0x00;
-            tx[2] = 0x00;
+                tx[0] = command;
+                tx[1] = 0x00;
+                tx[2] = 0x00;
 
-            _spi.TransferFullDuplex(tx, rx);
+                _spi.TransferFullDuplex(tx, rx);
 
-            return ((rx[1] << 8) | rx[2]) >> 3;
+                return ((rx[1] << 8) | rx[2]) >> 3;
+            }
+
+            // Order matters: Y first, then X
+            int y = Read12Bit(0x90);
+            int x = Read12Bit(0xD0);
+
+            // Optional pressure
+            int z1 = Read12Bit(0xB0);
+            int z2 = Read12Bit(0xC0);
+            int z = z1 + 4095 - z2;
+
+            // Basic validity checks
+            if (x <= 0 || y <= 0 || x >= 4095 || y >= 4095)
+                return false;
+
+            rawX = x;
+            rawY = y;
+            pressure = z;
+
+            Console.WriteLine($"RAW X={x} Y={y} Z={z}");
+
+            return true;
         }
-
-        // Order matters: Y first, then X
-        int y = Read12Bit(0x90);
-        int x = Read12Bit(0xD0);
-
-        // Optional pressure
-        int z1 = Read12Bit(0xB0);
-        int z2 = Read12Bit(0xC0);
-        int z = z1 + 4095 - z2;
-
-        // Basic validity checks
-        if (x <= 0 || y <= 0 || x >= 4095 || y >= 4095)
-            return false;
-
-        rawX = x;
-        rawY = y;
-        pressure = z;
-
-        Console.WriteLine($"RAW X={x} Y={y} Z={z}");
-
-        return true;
+        finally
+        {
+            _spiActive = false;
+        }
     }
 
     private void ProcessRawSample(int rawX, int rawY, int pressure)
     {
-        var now = DateTime.UtcNow;
-
-        const int MinPressure = 50;
-
-        if (pressure < MinPressure)
-        {
-            HandleRelease(now);
-            return;
-        }
-
         var point = Calibrate(rawX, rawY);
-        _lastTouchTime = now;
 
-        if (!_isTouching)
-        {
-            BeginTouch(point);
-            return;
-        }
+        _logger.LogDebug("Calibrated to X={PointX} Y={PointY}, P={Pressure}", point.X, point.Y, pressure);
 
-        HandleMove(point);
-    }
-
-    private void HandleRelease(DateTime now)
-    {
-        if (!_isTouching)
-        {
-            return;
-        }
-
-        if ((now - _lastTouchTime).TotalMilliseconds < ReleaseTimeoutMs)
-        {
-            return;
-        }
-
-        _isTouching = false;
-
-        TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Up, _lastPoint));
-    }
-
-    private void BeginTouch(TouchPoint point)
-    {
-        if (_stableCount == 0)
-        {
-            _stablePoint = point;
-        }
-
-        if (
-            Math.Abs(point.X - _stablePoint.X) < MoveThresholdPx
-            && Math.Abs(point.Y - _stablePoint.Y) < MoveThresholdPx
-        )
-        {
-            _stableCount++;
-        }
-        else
-        {
-            _stablePoint = point;
-            _stableCount = 1;
-        }
-
-        if (_stableCount >= StableCountRequired)
-        {
-            _isTouching = true;
-            _lastPoint = _stablePoint;
-            TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Down, _lastPoint));
-        }
-    }
-
-    private void HandleMove(TouchPoint point)
-    {
-        int dx = Math.Abs(point.X - _lastPoint.X);
-        int dy = Math.Abs(point.Y - _lastPoint.Y);
-
-        if (dx < MoveThresholdPx && dy < MoveThresholdPx)
-        {
-            return;
-        }
-
-        _lastPoint = point;
-
-        TouchEventReceived?.Invoke(new TouchEvent(TouchEventType.Move, point));
+        TouchEventReceived?.Invoke(new TouchEvent(point));
     }
 
     private TouchPoint Calibrate(int rawX, int rawY)
@@ -253,7 +191,7 @@ public class Xpt2046 : IDisposable, ITouchController
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
@@ -267,7 +205,7 @@ public class Xpt2046 : IDisposable, ITouchController
                 _cts.Dispose();
             }
 
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 

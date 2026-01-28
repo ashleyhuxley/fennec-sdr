@@ -3,15 +3,19 @@ using System.Device.Spi;
 
 namespace ElectricFox.FennecSdr.Display;
 
-public class Ili9341
+public class Ili9341 : ILcdDevice
 {
     private const int DcPin = 25;
     private const int ResetPin = 24;
 
     private readonly SpiDevice _spi;
     private readonly GpioController _gpio;
-
     private readonly object _spiLock;
+    private readonly IPixelConverter _pixelConverter = new Rgb565PixelConverter();
+
+    public int Width => 320;
+    public int Height => 240;
+    public IPixelConverter PixelConverter => _pixelConverter;
 
     public Ili9341(int spiBusId, int csPin, object spiLock)
     {
@@ -39,11 +43,11 @@ public class Ili9341
         }
     }
 
-    public void WriteScanline(ReadOnlySpan<byte> rgb565Line)
+    public void WriteScanline(ReadOnlySpan<byte> data)
     {
         lock (_spiLock)
         {
-            _spi.Write(rgb565Line);
+            _spi.Write(data);
         }
     }
 
@@ -119,39 +123,4 @@ public class Ili9341
             (byte)((y + h - 1) >> 8), (byte)(y + h - 1)
         });
     }
-
-    public void FillScreen(ushort color)
-    {
-        const int Width = 320;
-        const int Height = 240;
-
-        WriteCommand(0x2A); // Column addr
-        WriteData(stackalloc byte[]
-        {
-            0x00, 0x00,
-            (byte)((Width - 1) >> 8),
-            (byte)((Width - 1) & 0xFF)
-        });
-
-        WriteCommand(0x2B); // Page addr
-        WriteData(stackalloc byte[]
-        {
-            0x00, 0x00,
-            (byte)((Height - 1) >> 8),
-            (byte)((Height - 1) & 0xFF)
-        });
-
-        WriteCommand(0x2C); // Memory write
-
-        Span<byte> line = stackalloc byte[Width * 2];
-        for (int i = 0; i < line.Length; i += 2)
-        {
-            line[i] = (byte)(color >> 8);
-            line[i + 1] = (byte)(color & 0xFF);
-        }
-
-        _gpio.Write(DcPin, PinValue.High);
-        for (int y = 0; y < Height; y++)
-            _spi.Write(line);
-    }   
 }

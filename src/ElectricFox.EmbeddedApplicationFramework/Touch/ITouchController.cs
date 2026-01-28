@@ -1,8 +1,7 @@
-﻿namespace ElectricFox.FennecSdr.Touch
+﻿namespace ElectricFox.EmbeddedApplicationFramework.Touch;
+
+public interface ITouchController
 {
-    public interface ITouchController
-    {
-        event Action<TouchEvent> TouchEventReceived;
-        void Start();
-    }
+    event Action<TouchEvent> TouchEventReceived;
+    void Start();
 }

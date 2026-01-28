@@ -1,34 +1,34 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
-using ElectricFox.BdfSharp;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
 public class Label : UiElement
 {
-    public string Text { get; set; }
+    private Size _size;
+
+    private string _text = string.Empty;
+
     public Color Color { get; set; }
-    public BdfFont Font { get; set; }
+    public string Font { get; set; }
+    
+    public override Size Size => _size;
 
-    public override Size Size
+    public Label(string text, string font, int x, int y, Color color)
     {
-        get
-        {
-            var rect = Font.MeasureString(Text);
-            return new Size(rect.Width, rect.Height);
-        }
-    }
-
-    public Label(string text, BdfFont font, int x, int y, Color color)
-    {
-        Text = text;
+        _text = text;
         Font = font;
         Position = new Point(x, y);
         Color = color;
     }
 
-    public override void Render(GraphicsRenderer renderer)
+    protected override void OnRender(GraphicsRenderer renderer, IResourceProvider resourceProvider)
     {
-        renderer.DrawText(Text, Font, Position.X, Position.Y, Color);
+        var bdfFont = resourceProvider.GetFont(Font);
+        
+        var rect = bdfFont.MeasureString(_text);
+        _size = new Size(rect.Width, rect.Height);
+        
+        renderer.DrawText(_text, bdfFont, AbsolutePosition.X, AbsolutePosition.Y, Color);
     }
 }

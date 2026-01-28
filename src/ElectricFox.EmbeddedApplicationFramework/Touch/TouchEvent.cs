@@ -1,32 +1,12 @@
-﻿namespace ElectricFox.FennecSdr.Touch;
+﻿namespace ElectricFox.EmbeddedApplicationFramework.Touch;
 
-public enum TouchEventType
+public readonly struct TouchPoint(int x, int y)
 {
-    Down,
-    Move,
-    Up
+    public int X { get; } = x;
+    public int Y { get; } = y;
 }
 
-public readonly struct TouchPoint
+public readonly struct TouchEvent(TouchPoint point)
 {
-    public int X { get; }
-    public int Y { get; }
-
-    public TouchPoint(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
-}
-
-public readonly struct TouchEvent
-{
-    public TouchEventType Type { get; }
-    public TouchPoint Point { get; }
-
-    public TouchEvent(TouchEventType type, TouchPoint point)
-    {
-        Type = type;
-        Point = point;
-    }
+    public TouchPoint Point { get; } = point;
 }
