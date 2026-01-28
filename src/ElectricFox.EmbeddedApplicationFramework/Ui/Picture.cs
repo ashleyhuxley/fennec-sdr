@@ -1,6 +1,5 @@
 ﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;
 
