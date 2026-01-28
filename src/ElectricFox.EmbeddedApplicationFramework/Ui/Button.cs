@@ -1,6 +1,6 @@
-﻿using ElectricFox.EmbeddedApplicationFramework.Graphics;
+﻿using ElectricFox.BdfSharp;
+using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.FennecSdr.Touch;
-using ElectricFox.BdfSharp;
 using SixLabors.ImageSharp;
 
 namespace ElectricFox.EmbeddedApplicationFramework.Ui;
