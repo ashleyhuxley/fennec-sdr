@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using ElectricFox.EmbeddedApplicationFramework.Graphics;
 using ElectricFox.EmbeddedApplicationFramework.Touch;
 using ElectricFox.FennecSdr.App;
+using ElectricFox.FennecSdr.RtlSdrLib;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
@@ -37,7 +38,7 @@ public partial class MainWindow : Window, ITouchController
         Display.Source = target.Bitmap;
         
         // Create app with logging
-        _app = new SdrApp(target, this, new Size(320, 240), loggerFactory, new FakeRadioSource());
+        _app = new SdrApp(target, this, new Size(320, 240), loggerFactory, new RtlSdrRadioSource());
 
         Display.PointerPressed += (_, args) =>
         {

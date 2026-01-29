@@ -7,6 +7,8 @@ namespace ElectricFox.FennecSdr.App.Screens;
 
 public class CtcssScreen : Screen<bool>
 {
+    private readonly CtcssToneFinder _toneFinder;
+    
     private readonly Label _frequencyLabel;
     private readonly Label _toneLabel;
     private readonly Label _lastToneLabel;
@@ -36,6 +38,10 @@ public class CtcssScreen : Screen<bool>
     public CtcssScreen(IRadioSource radioSource)
     {
         _radioSource = radioSource;
+        _toneFinder = new CtcssToneFinder();
+        _toneFinder.ToneDetected += ToneFinderOnToneDetected;
+        _toneFinder.ToneLost += ToneFinderOnToneLost;
+        _toneFinder.HistogramAvailable += ToneFinderOnHistogramAvailable;
         
         _frequencyLabel = new Label($"Frequency:", ResourceManager.BdfFonts.Tamzen8x15b, 0, 2, Color.White);
         _toneLabel = new Label("Tone:", ResourceManager.BdfFonts.Tamzen8x15b, 0, 32, Color.White);
@@ -63,13 +69,40 @@ public class CtcssScreen : Screen<bool>
         _chart = new BarChart(300, 100)
         {
             BarWidth = 3,
-            Width = Ctcss.CtcssTones.Length * 3,
+            Width = Constants.CtcssTones.Length * 3,
             Height = 90,
             Position = new Point(0, 90),
             BackgroundColor = Color.DarkGray,
             BarColor = Color.Blue,
             SecondaryBarColor = Color.DarkBlue
         };
+    }
+
+    private void ToneFinderOnHistogramAvailable((double frequency, double power)[] data)
+    {
+        _chart.Data = data.Select(d => d.power).ToArray();
+        _chart.Invalidate();
+    }
+
+    private void ToneFinderOnToneLost()
+    {
+        _lastToneText.Text = $"{_lastTone:0.00} Hz";
+        
+        _toneText.Text = "Tone: None";
+        _toneText.Color = Color.DarkRed;
+    }
+
+    private void ToneFinderOnToneDetected(double tone)
+    {
+        if (_lastTone is not null)
+        {
+            _lastToneText.Text = $"{_lastTone:0.00} Hz";
+        }
+        
+        _toneText.Text = $"{tone:0.00} Hz";
+        _toneText.Color = Color.DarkGreen;
+
+        _lastTone = tone;
     }
 
     protected override void OnInitialize()
@@ -117,32 +150,9 @@ public class CtcssScreen : Screen<bool>
         // Unsubscribe from samples
         _radioSource.SamplesAvailable -= OnSamplesAvailable;
     }
-    
+
     private void OnSamplesAvailable(short[] samples)
     {
-        var data = Ctcss.GetToneValues(samples);
-        _chart.Data = data.Values.ToArray();
-        _chart.Invalidate();
-        
-        var tone = Ctcss.DetectCTCSS(samples);
-
-        if  (tone.HasValue)
-        {
-            _toneText.Text = $"{tone.Value:0.00} Hz";
-            _toneText.Color = Color.DarkGreen;
-        }
-        else
-        {
-            _toneText.Text = "Tone: None";
-            _toneText.Color = Color.DarkRed;
-        }
-
-        if (tone is null || Equals(tone, _lastTone))
-        {
-            return;
-        }
-        
-        _lastTone = tone;
-        _lastToneText.Text = $"{_lastTone.Value:0.00} Hz";
+        _toneFinder.AddSamples(samples);
     }
 }
