@@ -5,7 +5,6 @@ using ElectricFox.FennecSdr.RtlSdrLib;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
-using ElectricFox.EmbeddedApplicationFramework.Graphics;
 
 namespace ElectricFox.FennecSdr;
 
@@ -41,6 +40,6 @@ public class Program
         // Create app with logging
         var app = new SdrApp(target, touch, new Size(320, 240), loggerFactory, new RtlSdrRadioSource());
 
-        await Task.Run(() => app.StartAsync());
+        await app.StartAsync();
     }
 }

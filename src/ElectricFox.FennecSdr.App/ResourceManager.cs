@@ -10,21 +10,21 @@ public class ResourceManager : IResourceProvider
     public const string AppName = "FennecSDR";
     private const string NotLoadedError = "Resources not loaded";
 
-    public class BdfFonts
+    public static class BdfFonts
     {
-        public static string Tamzen8x15b = "ElectricFox.FennecSdr.App.Resources.Tamzen8x15b.bdf";
-        public static string CalBlk36 = "ElectricFox.FennecSdr.App.Resources.CalBlk36.bdf";
-        public static string Profont17 = "ElectricFox.FennecSdr.App.Resources.profont17.bdf";
-        public static string OpenIconicOther2X = "ElectricFox.FennecSdr.App.Resources.open_iconic_other_2x.bdf";
+        public static string Tamzen8x15b => "ElectricFox.FennecSdr.App.Resources.Tamzen8x15b.bdf";
+        public static string CalBlk36 => "ElectricFox.FennecSdr.App.Resources.CalBlk36.bdf";
+        public static string Profont17 => "ElectricFox.FennecSdr.App.Resources.profont17.bdf";
+        public static string OpenIconicOther2X => "ElectricFox.FennecSdr.App.Resources.open_iconic_other_2x.bdf";
     }
 
-    public class Images
+    public static class Images
     {
-        public static string Fennec = "ElectricFox.FennecSdr.App.Resources.fennec.png";
+        public static string Fennec => "ElectricFox.FennecSdr.App.Resources.fennec.png";
     }
 
-    private Dictionary<string, BdfFont> _fontCache = new();
-    private Dictionary<string, Image<Rgba32>> _imageCache = new();
+    private Dictionary<string, BdfFont> _fontCache => new();
+    private Dictionary<string, Image<Rgba32>> _imageCache => new();
 
     public async Task LoadAsync()
     {
